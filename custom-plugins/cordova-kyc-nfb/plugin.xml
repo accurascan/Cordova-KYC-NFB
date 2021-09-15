@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-kyc-nfb"
+        xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        version="0.1.0">
+    <name>ACCURAService</name>
+    <description>A Cordova plugin for ACCURAService</description>
+    <license>BSD-3</license>
+
+    <dependency id="cordova-plugin-screen-orientation" url="https://github.com/apache/cordova-plugin-screen-orientation.git"/>
+    <dependency id="cordova-plugin-streaming-media" url="https://github.com/nchutchind/cordova-plugin-streaming-media.git"/>
+    <dependency id="cordova-plugin-device" url="https://github.com/apache/cordova-plugin-device.git"/>
+    <dependency id="cordova-plugin-file" url="https://github.com/apache/cordova-plugin-file.git"/>
+
+    <js-module name="Promise" src="www/Promise.js">
+        <clobbers target="Promise" />
+    </js-module>
+    <js-module name="ACCURAService" src="www/ACCURA.js">
+        <clobbers target="cordova.plugins.ACCURAService" />
+    </js-module>
+    <platform name="android">
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.CAMERA" />
+            <uses-permission android:name="android.permission.RECORD_AUDIO" />
+            <uses-feature android:name="android.hardware.camera" />
+        </config-file>
+        <framework src="androidx.appcompat:appcompat:1.3.0" />
+        <framework src="androidx.constraintlayout:constraintlayout:2.0.4" />
+        
+        <!-- File for Without Simulator support android library -->
+        <lib-file src="src/android/lib/without_simulator/accura_kyc.aar"/>
+
+        <!-- File for With Simulator support android library -->
+        <!-- <lib-file src="src/android/lib/with_simulator/accura_kyc.aar"/> -->
+
+        <framework src="com.scottyab:rootbeer-lib:0.1.0" />
+        <framework src="com.google.code.gson:gson:2.8.6" />
+        <framework src="com.github.bumptech.glide:glide:4.6.1" />
+        <framework src="com.amitshekhar.android:android-networking:1.0.2" />
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity android:name="accura.kyc.plugin.OcrActivity" android:screenOrientation="locked" android:theme="@style/AppTheme" />
+            <activity android:name="accura.kyc.plugin.FaceMatchActivity" android:screenOrientation="locked" android:theme="@style/AppTheme" />
+        </config-file>
+        <config-file target="config.xml" parent="/*">
+            <feature name="ACCURAService">
+                <param name="android-package" value="accura.kyc.plugin.ACCURAService"/>
+            </feature>
+            <access origin="http://localhost/*" />
+        </config-file>
+        <source-file src="src/android/accura-OCR/ACCURAService.java" target-dir="src/accura/kyc/plugin/" />
+        <source-file src="src/android/accura-OCR/FaceMatchActivity.java" target-dir="src/accura/kyc/plugin/" />
+        <source-file src="src/android/accura-OCR/OcrActivity.java" target-dir="src/accura/kyc/plugin/" />
+        
+        <resource-file src="src/android/accura-OCR/layout/activity_face_match.xml" target="res/layout/activity_face_match.xml"/>
+         <resource-file src="src/android/accura-OCR/layout/custom_frame_layout.xml" target="res/layout/custom_frame_layout.xml"/>
+        <resource-file src="src/android/accura-OCR/layout/ocr_activity.xml" target="res/layout/ocr_activity.xml"/>
+
+
+        <resource-file src="src/android/accura-OCR/values/accura_strings.xml" target="res/values/accura_strings.xml"/>
+        <resource-file src="src/android/accura-OCR/values/accura_colors.xml" target="res/values/accura_colors.xml"/>
+        <resource-file src="src/android/accura-OCR/values/accura_styles.xml" target="res/values/accura_styles.xml"/>
+
+        <resource-file src="src/android/configs/accura_error_titles_configs.xml" target="res/values/accura_error_titles_configs.xml"/>
+        <resource-file src="src/android/configs/accura_scan_titles_configs.xml" target="res/values/accura_scan_titles_configs.xml"/>
+        <resource-file src="src/android/configs/face_match_config.xml" target="res/values/face_match_config.xml"/>
+        <resource-file src="src/android/configs/liveness_config.xml" target="res/values/liveness_config.xml"/>
+        <resource-file src="src/android/configs/recog_engine_config.xml" target="res/values/recog_engine_config.xml"/>
+
+
+        <source-file src="src/android/accura-OCR/drawables/drawable/flip_camera_icon.png" target-dir="res/drawable/"/>
+        <source-file src="src/android/accura-OCR/drawables/drawable/ic_mic.png" target-dir="res/drawable/"/>
+        <source-file src="src/android/accura-OCR/drawables/drawable/approved_sign.gif" target-dir="res/drawable/"/>
+        <source-file src="src/android/accura-OCR/drawables/drawable/accura_liveness_face_left.gif" target-dir="res/drawable/"/>
+        <source-file src="src/android/accura-OCR/drawables/drawable/accura_liveness_face_right.gif" target-dir="res/drawable/"/>
+
+        <source-file src="src/android/accura-OCR/drawables/raw/accura_liveness_verified.mp3" target-dir="res/raw/"/>
+        <source-file src="src/android/accura-OCR/drawables/layout-land/custom_frame_layout.xml" target-dir="res/layout-land/"/>
+        <source-file src="src/android/accura-OCR/drawables/layout-land/ocr_activity.xml" target-dir="res/layout-land/"/>
+
+
+        <hook type="after_plugin_install" src="scripts/afterBuild.js" />
+        <hook type="before_plugin_rm" src="scripts/afterRemove.js" />
+    </platform>
+    <platform name="ios">
+        <config-file parent="/*" target="config.xml">
+            <feature name="ACCURAService">
+                <param name="ios-package" value="ACCURAService"/>
+            </feature>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
+            <string>App needs to access camera to scan your document and provide you with accurate result</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSMicrophoneUsageDescription">
+            <string>App needs microphone for user oral verification</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSPhotoLibraryUsageDescription">
+            <string>App needs to photo library to save your document</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="NSPhotoLibraryAddUsageDescription">
+            <string>App needs to access camera to scan your document and provide you with accurate result</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="UIFileSharingEnabled">
+            <true/>
+        </config-file>
+        <config-file target="*-Info.plist" parent="LSSupportsOpeningDocumentsInPlace">
+            <true/>
+        </config-file>
+        <config-file target="*-Info.plist" parent="UISupportsDocumentBrowser">
+            <true/>
+        </config-file>
+
+        <podspec>
+            <config>
+                <source url="https://cdn.cocoapods.org/"/>
+            </config>
+            <pods use-frameworks="true" warn_for_unused_master_specs_repo="false">
+                <pod name="AccuraKYC-MRZ-Hybrid" type="podspec" spec="2.2.4" />
+            </pods>
+        </podspec>
+
+        <!-- File for Without Simulator support iOS library --> <!-- For active it uncomment bellow line and comment line no 110 -->
+        <!-- <framework src="src/ios/AccuraKYC.framework" custom="true" embed="true" /> -->
+
+        <!-- File for With Simulator support iOS library --> <!-- For active it uncomment bellow line and comment line no 107 -->
+        <!--  <framework src="src/ios/with_simulator/AccuraKYC.framework" custom="true" embed="true" /> -->
+
+        <source-file src="src/ios/accura-OCR/resources/back.imageset/back480.png" target-dir="../../Images.xcassets/back.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/back.imageset/back720.png" target-dir="../../Images.xcassets/back.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/back.imageset/back1080.png" target-dir="../../Images.xcassets/back.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/back.imageset/Contents.json" target-dir="../../Images.xcassets/back.imageset/"/>
+
+        <source-file src="src/ios/accura-OCR/resources/flip.imageset/flip.png" target-dir="../../Images.xcassets/flip.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/flip.imageset/flip@2x.png" target-dir="../../Images.xcassets/flip.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/flip.imageset/flip@3x.png" target-dir="../../Images.xcassets/flip.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/flip.imageset/Contents.json" target-dir="../../Images.xcassets/flip.imageset/"/>
+
+        <source-file src="src/ios/accura-OCR/resources/icn_flip.imageset/50.png" target-dir="../../Images.xcassets/icn_flip.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/icn_flip.imageset/100.png" target-dir="../../Images.xcassets/icn_flip.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/icn_flip.imageset/100-1.png" target-dir="../../Images.xcassets/icn_flip.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/icn_flip.imageset/Contents.json" target-dir="../../Images.xcassets/icn_flip.imageset/"/>
+
+        <source-file src="src/ios/accura-OCR/resources/accuraScanLogo.imageset/reg_logo.png" target-dir="../../Images.xcassets/accuraScanLogo.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/accuraScanLogo.imageset/reg_logo-1.png" target-dir="../../Images.xcassets/accuraScanLogo.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/accuraScanLogo.imageset/reg_logo-2.png" target-dir="../../Images.xcassets/accuraScanLogo.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/accuraScanLogo.imageset/Contents.json" target-dir="../../Images.xcassets/accuraScanLogo.imageset/"/>
+
+        <source-file src="src/ios/accura-OCR/resources/logo.imageset/Contents.json" target-dir="../../Images.xcassets/logo.imageset/"/>
+        <source-file src="src/ios/accura-OCR/resources/logo.imageset/logo.png" target-dir="../../Images.xcassets/logo.imageset/"/>
+
+
+        <source-file src="src/ios/accura-OCR/ACCURAService.swift" target-dir="accura-kyc/"/>
+        <source-file src="src/ios/accura-OCR/ViewController.swift" target-dir="accura-kyc/"/>
+        <source-file src="src/ios/accura-OCR/FMController.swift" target-dir="accura-kyc/"/>
+        <source-file src="src/ios/accura-OCR/LVController.swift" target-dir="accura-kyc/"/>
+
+        <source-file src="src/ios/configs/accura_error_configs.swift" target-dir="accura-kyc/"/>
+        <source-file src="src/ios/configs/accura_scan_configs.swift" target-dir="accura-kyc/"/>
+        <source-file src="src/ios/configs/accura_titles.swift" target-dir="accura-kyc/"/>
+        <source-file src="src/ios/configs/face_match_configs.swift" target-dir="accura-kyc/"/>
+        <source-file src="src/ios/configs/liveness_config.swift" target-dir="accura-kyc/"/>
+        <source-file src="src/ios/configs/recog_engin_configs.swift" target-dir="accura-kyc/"/>
+
+        <resource-file src="src/ios/accuraface.license" target="AccuraScan/accuraface.license"/>
+        <resource-file src="src/ios/key.license" target="AccuraScan/key.license"/>
+        <resource-file src="src/ios/accuraactiveliveness.license" target="AccuraScan/accuraactiveliveness.license"/>
+
+        <resource-file src="src/ios/accura-OCR/MainStoryboard_iPhone.storyboard" target="MainStoryboard_iPhone.storyboard"/>
+        <resource-file src="src/ios/accura-OCR/resources/accura_liveness_face_left.gif" target="AccuraScan/accura_liveness_face_left.gif"/>
+        <resource-file src="src/ios/accura-OCR/resources/accura_liveness_face_Right.gif" target="AccuraScan/accura_liveness_face_Right.gif"/>
+        <resource-file src="src/ios/accura-OCR/resources/accura_liveness_verified.mp3" target="AccuraScan/accura_liveness_verified.mp3"/>
+    </platform>
+</plugin>
+
+
+
+

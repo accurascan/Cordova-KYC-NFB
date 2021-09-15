@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport"
+        content="initial-scale=1, maximum-scale=1, minimum-scale=1,user-scalable=0 width=device-width">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/material-kit.css">
+    <title>Accura KYC</title>
+</head>
+
+<body style="background: white;overflow: hidden;touch-action: none">
+    <div class="p-3 d-flex bg-danger justify-content-center justify-content-between">
+        <h4 class="m-0 text-white font-weight-bold">Accura</h4>
+        <button class="btn btn-light btn-round btn-secondary btn-sm position-absolute" style="
+            width: 110px;
+            right: 10px;
+            margin-top: 0;" id="orientation-btn">Landscape
+        </button>
+    </div>
+    <div style="display:none;overflow: auto;height: 90%" class=" pt-2" id="main-div">
+        <div id="mrz-div" class="form-group p-2 m-3 border" style="display: none">
+            <h4>MRZ</h4>
+            <div class="form-group col-md-3">
+                <label for="mrz-types">Type</label>
+                <select id="mrz-types" onchange="mrzSelected = this.value" class="form-control">
+                    <option value="passport_mrz">Passport</option>
+                    <option value="id_mrz">ID Card</option>
+                    <option value="visa_mrz">Visa</option>
+                    <option selected value="other_mrz">All</option>
+                </select>
+            </div>
+            <div class="d-flex align-items-center justify-content-center">
+                <button class="btn btn-rose btn-block" style="width: 220px" onclick="startMRZ()">Start MRZ</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="result-modal" tabindex="-1" role="dialog" aria-labelledby="result-modal-title"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="result-modal-title">Accura</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="fm-modal" tabindex="-1" role="dialog" aria-labelledby="fm-title" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="fm-title">Accura Facematch</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex flex-column p-2 justify-content-between">
+                            <img id="fm-1" src="img/fm.png" class="img-fluid" style="border-radius: 15px">
+                            <button onclick="startFaceMatch(false, true, false)"
+                                class="mt-2 face-btn btn btn-danger btn-sm">Choose Face1</button>
+                        </div>
+                        <div class="d-flex flex-column p-2 justify-content-between">
+                            <img id="fm-2" src="img/fm.png" class="img-fluid" style="border-radius: 15px">
+                            <button onclick="startFaceMatch(false, false, true)"
+                                class="mt-2 face-btn btn btn-danger btn-sm">Choose Face2</button>
+                        </div>
+                    </div>
+                    <h5 class="m-0" id="fm-standalone-score"></h5>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="cordova.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/material-kit.min.js"></script>
+    <script src="js/bootstrap-material-design.min.js"></script>
+    <script src="js/sweetalert2.js"></script>
+    <script src="js/index.js"></script>
+</body>
+
+</html>
