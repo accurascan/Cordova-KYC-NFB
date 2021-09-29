@@ -1,10 +1,3 @@
-//
-//  LVController.swift
-//  Accura ORC and Facematch
-//
-//  Created by apple on 26/07/2021.
-//
-
 import UIKit
 import AccuraKYC
 import AVFoundation
@@ -35,12 +28,25 @@ class LVController: UIViewController, LivenessData
                 }
             }
             if gl.face2Detect != nil {
-                results["detect"] = ACCURAService.getImageUri(img: ACCURAService.resizeImage(image: livenessImage, targetSize: gl.face2Detect!.bound), name: nil)
+                
+                if let detectImage = ACCURAService.getImageUri(img: ACCURAService.resizeImage(image: livenessImage, targetSize: gl.face2Detect!.bound), name: nil) {
+                    results["detect"] = detectImage
+                }
+                if let imgBase64 = ACCURAService.getImageToBase64(img: ACCURAService.resizeImage(image: livenessImage, targetSize: gl.face2Detect!.bound)) {
+                    results["detect_base64"] = imgBase64
+                }
+                
             } else {
-                results["detect"] = ACCURAService.getImageUri(img: livenessImage, name: nil)
+                if let detectImage = ACCURAService.getImageUri(img: livenessImage, name: nil) {
+                    results["detect"] = detectImage
+                }
+                if let imgBase64 = ACCURAService.getImageToBase64(img: livenessImage) {
+                    results["detect_base64"] = imgBase64
+                }
             }
             if imagePath != "" {
                 results["image_uri"] = "file://\(imagePath!)"
+                results["image_uri_base64"] = ACCURAService.getUriToBase64(uri: "file://\(imagePath!)")
             }
 //            if videoPath != "" {
                 results["video_uri"] = ""
@@ -104,12 +110,26 @@ class LVController: UIViewController, LivenessData
                 }
             }
             if gl.face2Detect != nil {
-                results["detect"] = ACCURAService.getImageUri(img: ACCURAService.resizeImage(image: livenessImage, targetSize: gl.face2Detect!.bound), name: nil)
+                if let detectImage = ACCURAService.getImageUri(img: ACCURAService.resizeImage(image: livenessImage, targetSize: gl.face2Detect!.bound), name: nil) {
+                    results["detect"] = detectImage
+                }
+                if let imgBase64 = ACCURAService.getImageToBase64(img: ACCURAService.resizeImage(image: livenessImage, targetSize: gl.face2Detect!.bound)) {
+                    results["detect_base64"] = imgBase64
+                }
+                
+                
             } else {
-                results["detect"] = ACCURAService.getImageUri(img: livenessImage, name: nil)
+                
+                if let detectImage = ACCURAService.getImageUri(img: livenessImage, name: nil) {
+                    results["detect"] = detectImage
+                }
+                if let imgBase64 = ACCURAService.getImageToBase64(img: livenessImage) {
+                    results["detect_base64"] = imgBase64
+                }
             }
             if imagePath != "" {
                 results["image_uri"] = "file://\(imagePath!)"
+                results["image_uri_base64"] = ACCURAService.getUriToBase64(uri: "file://\(imagePath!)")
             }
             if videoPath != "" {
                 results["video_uri"] = videoPath!
@@ -171,7 +191,12 @@ class LVController: UIViewController, LivenessData
             if ScanConfigs.accuraConfigs.index(forKey: "face_uri") != nil {
                 if let face = ACCURAService.getImageFromUri(path: ScanConfigs.accuraConfigs["face_uri"] as! String) {
                     gl.face1 = face
-                    
+                }
+            } 
+            if ScanConfigs.accuraConfigs.index(forKey: "face_base64") != nil {
+                let newImageData = Data(base64Encoded: ScanConfigs.accuraConfigs["face_base64"] as! String)
+                if let newImageData = newImageData {
+                    gl.face1 = UIImage(data: newImageData)
                 }
             }
         } else {
@@ -179,7 +204,12 @@ class LVController: UIViewController, LivenessData
             if ScanConfigs.accuraConfigs.index(forKey: "face_uri") != nil {
                 if let face = ACCURAService.getImageFromUri(path: ScanConfigs.accuraConfigs["face_uri"] as! String) {
                     gl.face1 = face
-                    
+                }
+            } 
+            if ScanConfigs.accuraConfigs.index(forKey: "face_base64") != nil {
+                let newImageData = Data(base64Encoded: ScanConfigs.accuraConfigs["face_base64"] as! String)
+                if let newImageData = newImageData {
+                    gl.face1 = UIImage(data: newImageData)
                 }
             }
         }
@@ -285,7 +315,7 @@ class LVController: UIViewController, LivenessData
         
         liveness.setFeedBackLookLeftMessage(LivenessConfigs.feedBackLookLeftMessage)
         if livenessConfigs.index(forKey: "feedBackLookLeftMessage") != nil {
-            liveness.setFeedBackLookRightMessage(livenessConfigs["feedBackLookLeftMessage"] as! String)
+            liveness.setFeedBackLookLeftMessage(livenessConfigs["feedBackLookLeftMessage"] as! String)
         }
         
         liveness.setFeedBackLookRightMessage(LivenessConfigs.feedBackLookRightMessage)
@@ -302,10 +332,20 @@ class LVController: UIViewController, LivenessData
         if livenessConfigs.index(forKey: "feedBackStartMessage") != nil {
             liveness.setFeedBackFaceInsideOvalMessage(livenessConfigs["feedBackStartMessage"] as! String)
         }
+
+        liveness.isShowLogo(LivenessConfigs.isShowLogo)
+        if livenessConfigs.index(forKey: "isShowLogo") != nil {
+            liveness.isShowLogo(livenessConfigs["isShowLogo"] as! Bool)
+        }
+        liveness.setFeedBackProcessingMessage(LivenessConfigs.feedBackProcessingMessage)
+        if livenessConfigs.index(forKey: "feedBackProcessingMessage") != nil {
+            liveness.setFeedBackProcessingMessage(livenessConfigs["feedBackProcessingMessage"] as! String)
+        }
         
         //set GIF name with extension. make sure GIF files are added in your project root directory.
         liveness.gifImageName(forLeftMoveFaceAnimation: "accura_liveness_face_left.gif")
         liveness.gifImageName(forRightMoveFaceAnimation: "accura_liveness_face_Right.gif")
+        // liveness.setLogoImage("logo")
         
 //        liveness.setfeedBackVideoRecordingMessage(LivenessConfigs.feedBackVideoRecordingMessage)
 //        if livenessConfigs.index(forKey: "feedBackVideoRecordingMessage") != nil {
@@ -361,7 +401,7 @@ class LVController: UIViewController, LivenessData
         
 //        New changes by ANIL => End
         
-        liveness.evaluateServerTrustWIthSSLPinning(false)
+        // liveness.evaluateServerTrustWIthSSLPinning(false)
         liveness.setLiveness(self)
         
     }

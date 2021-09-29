@@ -1,4 +1,4 @@
-﻿Accura Cordova Plugin for MRZ (without firebase)
+﻿Accura Cordova Plugin for sacnning MRZ documents.
 
 cordova-kyc-nfb
 
@@ -57,6 +57,7 @@ Here you have two options for android that which library you want to use for thi
 |enableLogs|boolean|false|<p>if true logs will be enabled for the app.</p><p><br>make sure to disable logs in release mode</p>|
 |with_face|boolean|false|need when using liveness or face match after ocr|
 |face_uri|URI Sting|undefined|Required when with_face = true|
+|face_base64|Image base64 Sting|undefined|Required when with_face = true. You have to pass "face_uri" or "face_base64"|
 |face1|boolean|false|need when using facematch with “with_face = false”<br><br>For Face1 set it to TRUE|
 |face2|boolean|false|<p>need when using facematch with “with_face = false”</p><p>For Face2 set it to TRUE</p>|
 |rg_setBlurPercentage|integer|62|0 for clean document and 100 for Blurry document|
@@ -130,6 +131,8 @@ Contact AccuraScan at contact@accurascan.com for Liveness SDK or API
 |feedBackLookRightMessage|string|Look over your right shoulder||
 |feedBackOralInfoMessage|string|Say each digits out loud||
 |enableOralVerification|boolean|true||
+|feedBackProcessingMessage|string|"Processing..."||
+|isShowLogo|boolean|true|For display watermark logo images|
 |codeTextColor|color string|#FF000000||
 
 
@@ -138,19 +141,22 @@ Contact AccuraScan at contact@accurascan.com for Liveness SDK or API
 
 |Option|Type|Default|Description|
 | :- | :- | :- | :- |
-|fm_feedbackTextSize|integer|18||
-|fm_feedBackframeMessage|string|Frame Your Face||
-|fm_feedBackAwayMessage|string|Move Phone Away||
-|fm_feedBackOpenEyesMessage|string|Keep Your Eyes Open||
-|fm_feedBackCloserMessage|string|Move Phone Closer||
-|fm_feedBackCenterMessage|string|Move Phone Center||
-|fm_feedBackMultipleFaceMessage|string|Multiple Face Detected||
-|fm_feedBackHeadStraightMessage|string|Keep Your Head Straight||
-|fm_feedBackBlurFaceMessage|string|Blur Detected Over Face||
-|fm_feedBackGlareFaceMessage|string|Glare Detected||
-|fm_setBlurPercentage|integer|80|0 for clean face and 100 for Blurry face or set it -1 to remove blur filter|
-|fm_setGlarePercentage_0|integer|-1|Set min percentage for glare or set it -1 to remove glare filter|
-|fm_setGlarePercentage_1|integer|-1|Set max percentage for glare or set it -1 to remove glare filter|
+|feedbackTextSize|integer|18||
+|feedBackframeMessage|string|Frame Your Face||
+|feedBackAwayMessage|string|Move Phone Away||
+|feedBackOpenEyesMessage|string|Keep Your Eyes Open||
+|feedBackCloserMessage|string|Move Phone Closer||
+|feedBackCenterMessage|string|Move Phone Center||
+|feedBackMultipleFaceMessage|string|Multiple Face Detected||
+|feedBackHeadStraightMessage|string|Keep Your Head Straight||
+|feedBackBlurFaceMessage|string|Blur Detected Over Face||
+|feedBackGlareFaceMessage|string|Glare Detected||
+|setBlurPercentage|integer|80|0 for clean face and 100 for Blurry face or set it -1 to remove blur filter|
+|setGlarePercentage_0|integer|-1|Set min percentage for glare or set it -1 to remove glare filter|
+|setGlarePercentage_1|integer|-1|Set max percentage for glare or set it -1 to remove glare filter|
+|feedBackStartMessage|string|Put your face inside the oval||
+|feedBackProcessingMessage|string|"Processing..."||
+|isShowLogo|boolean|true|For display watermark logo images|
 |backGroundColor|color string|#FFC4C4C5||
 |closeIconColor|color string|#FF000000||
 |feedbackBackGroundColor|color string|#00000000||
@@ -219,7 +225,9 @@ Contact AccuraScan at contact@accurascan.com for Liveness SDK or API
 
   - Error: String<Any Error Message>
 
-- ### startMRZ(accuraConfigrations?, MRZType, CountryList, successCallback, errorCallback)
+- ### startMRZ(accuraConfigrations?, Configs, MRZType, CountryList, successCallback, errorCallback)
+  - Configs: JSON 
+    - JSON object for custom messages.
   - MRZType: String 
     - default: other_mrz
   - CountryList: String 
@@ -234,9 +242,15 @@ Contact AccuraScan at contact@accurascan.com for Liveness SDK or API
 
  	 face: URI?
 
+     face_base64: String?
+
  	 front_img: URI?
 
+     front_img_base64: String?
+
  	 back_img: URI?
+
+     back_img_base64: String?
 
 }
 
@@ -256,7 +270,11 @@ Contact AccuraScan at contact@accurascan.com for Liveness SDK or API
 
  	 detect: URI?,
 
+     detect_base64: String?
+
  	 image_uri: URI?,
+    
+     image_uri_base64: String?
 
  	 video_uri: URI?,
 
@@ -280,9 +298,15 @@ Contact AccuraScan at contact@accurascan.com for Liveness SDK or API
 
  	 detect: URI? (when with_face = true),
 
+     detect_base64: String? (when with_face = true),
+
  	 img_1: URI? (when with_face = false),
 
+     img_1_base64: String? (when with_face = false),
+
  	 img_2: URI? (when with_face = false),
+
+     img_2_base64: String? (when with_face = false),
 
  	 score: Float
 
@@ -698,73 +722,9 @@ function getMetadata() {
 
              $('#main-div').fadeIn();
 
-             if (results.isOCR) {
-
-                 if (results.countries.length > 0) {
-
-                         countries = results.countries;
-
-                     results.countries.forEach(function (country, i) {
-
-                         var uid = i + '_' + country.id;
-
-                         if (i === 0) {
-
-                             countrySelected = countrySelectedForCard = uid;
-
-                             getCards(countrySelectedForCard)
-
-                         }
-
-                         $('#countries-1, #countries-2').append(
-
-                             '<option value="' + uid + '">' + country.name + '</option>'
-
-                         )
-
-                         $('#country-modal .modal-body').append(
-
-                             '<h5 onclick="getCardsModal(this.id)" class="country-card" id="' + i + '">' + country.name + '</h5>'
-
-                         )
-
-                     });
-
-                 }
-
-             }
-
              if (results.isMRZ) {
 
                  $('#mrz-div').fadeIn();
-
-             }
-
-             if (results.isBarcode) {
-
-                 $('#barcode-div').fadeIn();
-
-                 results.barcodes.forEach(function (barcode, i) {
-
-                     if (i === 0) {
-
-                         barcodeSelected = barcode.type;
-
-                     }
-
-                     $('#barcode-types').append(
-
-                         '<option value="' + barcode.type + '">' + barcode.name + '</option>'
-
-                     )
-
-                 })
-
-             }
-
-             if (results.isBankCard) {
-
-                 $('#bank-div').fadeIn();
 
              }
 
@@ -852,7 +812,30 @@ function startMRZ() {
 
      var accuraConfigs = {};
 
-     accura.startMRZ(accuraConfigs, mrzSelected, mrzCountryList, function (result) {
+     var config = {
+        ACCURA_ERROR_CODE_MOTION:'Keep Document Steady',
+        ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME:'Keep document in frame',
+        ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME: ?  'Bring card near to frame',
+        ACCURA_ERROR_CODE_PROCESSING: ?  'Processing…',
+        ACCURA_ERROR_CODE_BLUR_DOCUMENT: ?  'Blur detect in document',
+        ACCURA_ERROR_CODE_FACE_BLUR: ?  'Blur detected over face',
+        ACCURA_ERROR_CODE_GLARE_DOCUMENT: ?  'Glare detect in document',
+        ACCURA_ERROR_CODE_HOLOGRAM: ?  'Hologram Detected', 
+        ACCURA_ERROR_CODE_DARK_DOCUMENT: ?  'Low lighting detected',
+        ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT: ?  'Can not accept Photo Copy Document',
+        ACCURA_ERROR_CODE_FACE: ?  'Face not detected',
+        ACCURA_ERROR_CODE_MRZ: ?  'MRZ not detected',
+        ACCURA_ERROR_CODE_PASSPORT_MRZ: ?  'Passport MRZ not detected' ,
+        ACCURA_ERROR_CODE_ID_MRZ: ?  'ID card MRZ not detected',
+        ACCURA_ERROR_CODE_VISA_MRZ: ?  'Visa MRZ not detected',
+        ACCURA_ERROR_CODE_WRONG_SIDE: ?  'Scanning wrong side of document',
+        ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE: ?  'Document is upside down. Place it properly',
+    
+        SCAN_TITLE_MRZ_PDF417_FRONT: ?  'Scan Front Side of Document',
+        SCAN_TITLE_MRZ_PDF417_BACK: ?  'Now Scan Back Side of Document',
+    };
+
+     accura.startMRZ(accuraConfigs, config, mrzSelected, mrzCountryList, function (result) {
 
          generateResult(result)
 
@@ -870,9 +853,10 @@ function startMRZ() {
 ```js
 function startLiveness(withFace = false) {
 
-     var accuraConfs = {with_face: withFace, face_uri: facematchURI};
+     var accuraConfs = {with_face: withFace, face_uri: facematchURI "or" face_base64: faceMatchBase64};
 
      if (!withFace) {delete accuraConfs.face_uri;}
+     if (!withFace) {delete accuraConfs.face_base64;}
 
      var config = {
 
@@ -926,7 +910,11 @@ function startLiveness(withFace = false) {
 
          enableOralVerification: true,
 
-         codeTextColor: 'white'
+         codeTextColor: 'white',
+
+         feedBackProcessingMessage: 'Processing...',
+        
+         isShowLogo: true
 
      };
 
@@ -1091,12 +1079,15 @@ function openVideoForPlay() {
 ```js 
 
 var facematchURI;
+var faceMatchBase64;
 
 function startFaceMatch(withFace = false, face1 = false, face2 = false) {
 
-     var accuraConfs = {with_face: withFace, face_uri: facematchURI};
+     var accuraConfs = {with_face: withFace, face_uri: facematchURI "or" face_base64: faceMatchBase64};
 
      if (!withFace) {delete accuraConfs.face_uri;}
+
+     if (!withFace) {delete accuraConfs.face_base64;}
 
      if (face1) {face2 = false;}
 
@@ -1108,35 +1099,39 @@ function startFaceMatch(withFace = false, face1 = false, face2 = false) {
 
      var config = {
 
-         fm_feedbackTextSize: 18,
+         feedbackTextSize: 18,
 
-         fm_feedBackframeMessage: 'Frame Your Face',
+         feedBackframeMessage: 'Frame Your Face',
 
-         fm_feedBackAwayMessage: 'Move Phone Away',
+         feedBackAwayMessage: 'Move Phone Away',
 
-         fm_feedBackOpenEyesMessage: 'Keep Your Eyes Open',
+         feedBackOpenEyesMessage: 'Keep Your Eyes Open',
 
-         fm_feedBackCloserMessage: 'Move Phone Closer',
+         feedBackCloserMessage: 'Move Phone Closer',
 
-         fm_feedBackCenterMessage: 'Move Phone Center',
+         feedBackCenterMessage: 'Move Phone Center',
 
-         fm_feedBackMultipleFaceMessage: 'Multiple Face Detected',
+         feedBackMultipleFaceMessage: 'Multiple Face Detected',
 
-         fm_feedBackHeadStraightMessage: 'Keep Your Head Straight',
+         feedBackHeadStraightMessage: 'Keep Your Head Straight',
 
-         fm_feedBackBlurFaceMessage: 'Blur Detected Over Face',
+         feedBackBlurFaceMessage: 'Blur Detected Over Face',
 
-         fm_feedBackGlareFaceMessage: 'Glare Detected',
+         feedBackGlareFaceMessage: 'Glare Detected',
+
+         feedBackProcessingMessage: 'Processing...',
+
+         isShowLogo: true,
 
          // <!--// 0 for clean face and 100 for Blurry face or set it -1 to remove blur filter-->
 
-         fm_setBlurPercentage: 80,
+         setBlurPercentage: 80,
 
          // <!--// Set min percentage for glare or set it -1 to remove glare filter-->
 
-         fm_setGlarePercentage_0: -1,
+         setGlarePercentage_0: -1,
 
-         fm_setGlarePercentage_1: -1,
+         setGlarePercentage_1: -1,
 
      };
 
@@ -1330,6 +1325,7 @@ function generateResult(result) {
             "   <h5 id='fm-score'>0.00 %</h5>" +
             "</div>";
         facematchURI = result.face;
+        faceMatchBase64 = result.face_base64;
         getImage('face', result.face, true);
     }
     sides.forEach(function (side, i) {

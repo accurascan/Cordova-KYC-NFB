@@ -54,6 +54,22 @@ struct gl {
       let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
       return String((0..<length).map{ _ in letters.randomElement()! })
     }
+    
+    static func getImageToBase64(img: UIImage) -> String? {
+        return img.jpegData(compressionQuality: 1)?.base64EncodedString()
+    }
+    
+    static func getUriToBase64(uri: String) -> String? {
+        
+        let imageView = UIImageView()
+        if let image = UIImage(contentsOfFile: uri) {
+            imageView.contentMode = .scaleAspectFit
+            imageView.image = image
+            return image.jpegData(compressionQuality: 1)?.base64EncodedString()
+        }
+        return nil
+    }
+    
     static func getImageUri(img: UIImage, name: String?) -> String? {
         var file = ACCURAService.randomString(length: 6)
         if let filename = name {
@@ -151,9 +167,10 @@ struct gl {
     func startMRZ(command: CDVInvokedUrlCommand) {
         gl.ocrClId = command.callbackId
         ScanConfigs.accuraConfigs = command.argument(at: 0) as! [String: Any]
-        ScanConfigs.mrzType = command.argument(at: 1) as! String
-        ScanConfigs.mrzCountryList = command.argument(at: 2) as! String
-        ScanConfigs.accuraConfigs["app_orientation"] = command.argument(at: 3) as! String
+        ScanConfigs.accuraMessagesConfigs = command.argument(at: 1) as! [String: Any]
+        ScanConfigs.mrzType = command.argument(at: 2) as! String
+        ScanConfigs.mrzCountryList = command.argument(at: 3) as! String
+        ScanConfigs.accuraConfigs["app_orientation"] = command.argument(at: 4) as! String
         gl.type = "mrz"
         let viewController = UIStoryboard(name: "MainStoryboard_iPhone", bundle: nil).instantiateViewController(withIdentifier: "ViewController") as! ViewController
         viewController.commandDelegate = self.commandDelegate

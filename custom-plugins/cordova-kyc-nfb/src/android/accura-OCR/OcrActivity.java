@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -48,6 +49,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static accura.kyc.plugin.ACCURAService.getImageUri;
+import static accura.kyc.plugin.ACCURAService.getUriToBase64;
 import static accura.kyc.plugin.ACCURAService.getSaltString;
 
 public class OcrActivity extends SensorsActivity implements OcrCallback {
@@ -434,6 +436,7 @@ public class OcrActivity extends SensorsActivity implements OcrCallback {
         if (needCallback) {
             RecogResult recogResult = null;
             String frontUri = null, backUri = null, faceUri = null;
+            String frontUriBase64 = null, backUriBase64 = null, faceUriBase64 = null;
             JSONObject results = new JSONObject();
             JSONObject frontResult = new JSONObject();
             JSONObject mrzResult = new JSONObject();
@@ -446,12 +449,15 @@ public class OcrActivity extends SensorsActivity implements OcrCallback {
                     frontResult = setMRZData(recogResult);
                     if (recogResult.faceBitmap != null) {
                         faceUri = getImageUri(recogResult.faceBitmap, "face", fileDir);
+                        faceUriBase64 = getUriToBase64(recogResult.faceBitmap);
                     }
                     if (recogResult.docFrontBitmap != null) {
                         frontUri = getImageUri(recogResult.docFrontBitmap, "front", fileDir);
+                        frontUriBase64 = getUriToBase64(recogResult.docFrontBitmap);
                     }
                     if (recogResult.docBackBitmap != null) {
                         backUri = getImageUri(recogResult.docBackBitmap, "back", fileDir);
+                        backUriBase64 = getUriToBase64(recogResult.docBackBitmap);
                     }
                 }
 
@@ -466,6 +472,16 @@ public class OcrActivity extends SensorsActivity implements OcrCallback {
                 if (backUri != null) {
                     results.put("back_img", backUri);
                 }
+                if (faceUriBase64 != null) {
+                    results.put("face_base64", faceUriBase64);
+                }
+                if (frontUriBase64 != null) {
+                    results.put("front_img_base64", frontUriBase64);
+                }
+                if (backUriBase64 != null) {
+                    results.put("back_img_base64", backUriBase64);
+                }
+
                 results.put("type", type);
                 results.put("back_data", backResult);
                 results.put("front_data", frontResult);
@@ -581,62 +597,203 @@ public class OcrActivity extends SensorsActivity implements OcrCallback {
 
     private String getTitleMessage(int titleCode) {
         Bundle bundle = getIntent().getExtras();
+        String strMessage = "";
         if (titleCode < 0) return null;
         switch (titleCode) {
             case RecogEngine.SCAN_TITLE_OCR_FRONT:// for front side ocr;
-                return String.format(bundle.getString("SCAN_TITLE_OCR_FRONT", res.getString(R("SCAN_TITLE_OCR_FRONT", "string"))), cardName);
+
+                strMessage = String.format(bundle.getString("SCAN_TITLE_OCR_FRONT", res.getString(R("SCAN_TITLE_OCR_FRONT", "string"))), cardName);
+                if (bundle.containsKey("SCAN_TITLE_OCR_FRONT")) {
+                    strMessage = String.format(bundle.getString("ACCURA_ERROR_CODE_MOTION") + " %s", cardName);
+                }
+                return strMessage;
+//                return String.format(bundle.getString("SCAN_TITLE_OCR_FRONT", res.getString(R("SCAN_TITLE_OCR_FRONT", "string"))), cardName);
             case RecogEngine.SCAN_TITLE_OCR_BACK: // for back side ocr
-                return String.format(bundle.getString("SCAN_TITLE_OCR_BACK", res.getString(R("SCAN_TITLE_OCR_BACK", "string"))), cardName);
+
+                strMessage = String.format(bundle.getString("SCAN_TITLE_OCR_BACK", res.getString(R("SCAN_TITLE_OCR_BACK", "string"))), cardName);
+                if (bundle.containsKey("SCAN_TITLE_OCR_BACK")) {
+                    strMessage = String.format(bundle.getString("SCAN_TITLE_OCR_BACK") + " %s", cardName);
+                }
+                return strMessage;
+//                return String.format(bundle.getString("SCAN_TITLE_OCR_BACK", res.getString(R("SCAN_TITLE_OCR_BACK", "string"))), cardName);
             case RecogEngine.SCAN_TITLE_OCR: // only for single side ocr
-                return String.format(bundle.getString("SCAN_TITLE_OCR", res.getString(R("SCAN_TITLE_OCR", "string"))), cardName);
+
+                strMessage = String.format(bundle.getString("SCAN_TITLE_OCR", res.getString(R("SCAN_TITLE_OCR", "string"))), cardName);
+                if (bundle.containsKey("SCAN_TITLE_OCR")) {
+                    strMessage = String.format(bundle.getString("SCAN_TITLE_OCR") + " %s", cardName);
+                }
+                return strMessage;
+//                return String.format(bundle.getString("SCAN_TITLE_OCR", res.getString(R("SCAN_TITLE_OCR", "string"))), cardName);
             case RecogEngine.SCAN_TITLE_MRZ_PDF417_FRONT:// for front side MRZ and PDF417
-                    return bundle.getString("SCAN_TITLE_MRZ_PDF417_FRONT", res.getString(R("SCAN_TITLE_MRZ_PDF417_FRONT", "string")));
+
+                strMessage = bundle.getString("SCAN_TITLE_MRZ_PDF417_FRONT", res.getString(R("SCAN_TITLE_MRZ_PDF417_FRONT", "string")));
+                if (bundle.containsKey("SCAN_TITLE_MRZ_PDF417_FRONT")) {
+                    strMessage = String.format(bundle.getString("SCAN_TITLE_MRZ_PDF417_FRONT"));
+                }
+                return strMessage;
+//                return bundle.getString("SCAN_TITLE_MRZ_PDF417_FRONT", res.getString(R("SCAN_TITLE_MRZ_PDF417_FRONT", "string")));
             case RecogEngine.SCAN_TITLE_MRZ_PDF417_BACK: // for back side MRZ and PDF417
-                return bundle.getString("SCAN_TITLE_MRZ_PDF417_BACK", res.getString(R("SCAN_TITLE_MRZ_PDF417_BACK", "string")));
+
+                strMessage = bundle.getString("SCAN_TITLE_MRZ_PDF417_BACK", res.getString(R("SCAN_TITLE_MRZ_PDF417_BACK", "string")));
+                if (bundle.containsKey("SCAN_TITLE_MRZ_PDF417_BACK")) {
+                    strMessage = String.format(bundle.getString("SCAN_TITLE_MRZ_PDF417_BACK"));
+                }
+                return strMessage;
+//                return bundle.getString("SCAN_TITLE_MRZ_PDF417_BACK", res.getString(R("SCAN_TITLE_MRZ_PDF417_BACK", "string")));
             case RecogEngine.SCAN_TITLE_DLPLATE: // for DL plate
-                return bundle.getString("SCAN_TITLE_DLPLATE", res.getString(R("SCAN_TITLE_DLPLATE", "string")));
+
+                strMessage = bundle.getString("SCAN_TITLE_DLPLATE", res.getString(R("SCAN_TITLE_DLPLATE", "string")));
+                if (bundle.containsKey("SCAN_TITLE_DLPLATE")) {
+                    strMessage = String.format(bundle.getString("SCAN_TITLE_DLPLATE"));
+                }
+                return strMessage;
+//                return bundle.getString("SCAN_TITLE_DLPLATE", res.getString(R("SCAN_TITLE_DLPLATE", "string")));
             default:
                 return "";
         }
     }
 
     private String getErrorMessage(String s) {
+
         Bundle bundle = getIntent().getExtras();
+        String strMessage = "";
         switch (s) {
             case RecogEngine.ACCURA_ERROR_CODE_MOTION:
-                return bundle.getString("ACCURA_ERROR_CODE_MOTION", res.getString(R("ACCURA_ERROR_CODE_MOTION", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_MOTION", res.getString(R("ACCURA_ERROR_CODE_MOTION", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_MOTION")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_MOTION");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_MOTION", res.getString(R("ACCURA_ERROR_CODE_MOTION", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME:
-                return bundle.getString("ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME", res.getString(R("ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME", res.getString(R("ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME", res.getString(R("ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME:
-                return bundle.getString("ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME", res.getString(R("ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME", res.getString(R("ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME", res.getString(R("ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_PROCESSING:
-                return bundle.getString("ACCURA_ERROR_CODE_PROCESSING", res.getString(R("ACCURA_ERROR_CODE_PROCESSING", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_PROCESSING", res.getString(R("ACCURA_ERROR_CODE_PROCESSING", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_PROCESSING")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_PROCESSING");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_PROCESSING", res.getString(R("ACCURA_ERROR_CODE_PROCESSING", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_BLUR_DOCUMENT:
-                return bundle.getString("ACCURA_ERROR_CODE_BLUR_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_BLUR_DOCUMENT", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_BLUR_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_BLUR_DOCUMENT", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_BLUR_DOCUMENT")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_BLUR_DOCUMENT");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_BLUR_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_BLUR_DOCUMENT", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_FACE_BLUR:
-                return bundle.getString("ACCURA_ERROR_CODE_FACE_BLUR", res.getString(R("ACCURA_ERROR_CODE_FACE_BLUR", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_FACE_BLUR", res.getString(R("ACCURA_ERROR_CODE_FACE_BLUR", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_FACE_BLUR")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_FACE_BLUR");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_FACE_BLUR", res.getString(R("ACCURA_ERROR_CODE_FACE_BLUR", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_GLARE_DOCUMENT:
-                return bundle.getString("ACCURA_ERROR_CODE_GLARE_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_GLARE_DOCUMENT", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_GLARE_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_GLARE_DOCUMENT", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_GLARE_DOCUMENT")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_GLARE_DOCUMENT");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_GLARE_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_GLARE_DOCUMENT", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_HOLOGRAM:
-                return bundle.getString("ACCURA_ERROR_CODE_HOLOGRAM", res.getString(R("ACCURA_ERROR_CODE_HOLOGRAM", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_HOLOGRAM", res.getString(R("ACCURA_ERROR_CODE_HOLOGRAM", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_HOLOGRAM")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_HOLOGRAM");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_HOLOGRAM", res.getString(R("ACCURA_ERROR_CODE_HOLOGRAM", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_DARK_DOCUMENT:
-                return bundle.getString("ACCURA_ERROR_CODE_DARK_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_DARK_DOCUMENT", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_DARK_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_DARK_DOCUMENT", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_DARK_DOCUMENT")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_DARK_DOCUMENT");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_DARK_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_DARK_DOCUMENT", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT:
-                return bundle.getString("ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT", res.getString(R("ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_FACE:
-                return bundle.getString("ACCURA_ERROR_CODE_FACE", res.getString(R("ACCURA_ERROR_CODE_FACE", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_FACE", res.getString(R("ACCURA_ERROR_CODE_FACE", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_FACE")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_FACE");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_FACE", res.getString(R("ACCURA_ERROR_CODE_FACE", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_MRZ:
-                return bundle.getString("ACCURA_ERROR_CODE_MRZ", res.getString(R("ACCURA_ERROR_CODE_MRZ", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_MRZ", res.getString(R("ACCURA_ERROR_CODE_MRZ", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_MRZ")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_MRZ");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_MRZ", res.getString(R("ACCURA_ERROR_CODE_MRZ", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_PASSPORT_MRZ:
-                return bundle.getString("ACCURA_ERROR_CODE_PASSPORT_MRZ", res.getString(R("ACCURA_ERROR_CODE_PASSPORT_MRZ", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_PASSPORT_MRZ", res.getString(R("ACCURA_ERROR_CODE_PASSPORT_MRZ", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_PASSPORT_MRZ")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_PASSPORT_MRZ");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_PASSPORT_MRZ", res.getString(R("ACCURA_ERROR_CODE_PASSPORT_MRZ", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_ID_MRZ:
-                return bundle.getString("ACCURA_ERROR_CODE_ID_MRZ", res.getString(R("ACCURA_ERROR_CODE_ID_MRZ", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_ID_MRZ", res.getString(R("ACCURA_ERROR_CODE_ID_MRZ", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_ID_MRZ")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_ID_MRZ");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_ID_MRZ", res.getString(R("ACCURA_ERROR_CODE_ID_MRZ", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_VISA_MRZ:
-                return bundle.getString("ACCURA_ERROR_CODE_VISA_MRZ", res.getString(R("ACCURA_ERROR_CODE_VISA_MRZ", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_VISA_MRZ", res.getString(R("ACCURA_ERROR_CODE_VISA_MRZ", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_VISA_MRZ")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_VISA_MRZ");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_VISA_MRZ", res.getString(R("ACCURA_ERROR_CODE_VISA_MRZ", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_WRONG_SIDE:
-                return bundle.getString("ACCURA_ERROR_CODE_WRONG_SIDE", res.getString(R("ACCURA_ERROR_CODE_WRONG_SIDE", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_WRONG_SIDE", res.getString(R("ACCURA_ERROR_CODE_WRONG_SIDE", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_WRONG_SIDE")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_WRONG_SIDE");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_WRONG_SIDE", res.getString(R("ACCURA_ERROR_CODE_WRONG_SIDE", "string")));
             case RecogEngine.ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE:
-                return bundle.getString("ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE", res.getString(R("ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE", "string")));
+
+                strMessage = bundle.getString("ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE", res.getString(R("ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE", "string")));
+                if (bundle.containsKey("ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE")) {
+                    strMessage = bundle.getString("ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE");
+                }
+                return strMessage;
+//                return bundle.getString("ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE", res.getString(R("ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE", "string")));
             default:
                 return s;
         }

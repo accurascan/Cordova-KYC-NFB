@@ -1749,9 +1749,88 @@ extension ViewController: VideoCameraWrapperDelegate {
     func reco_titleMessage(_ messageCode: Int32) {
         var msg: String = ""
         switch messageCode {
+            case SCAN_TITLE_OCR_FRONT:
+                msg = ScanConfigs.SCAN_TITLE_OCR_FRONT
+                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_FRONT") != nil {
+                    msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_FRONT"] as! String
+                }
+//                if isNeedBackSideFirst() {
+//                    msg = ScanConfigs.SCAN_TITLE_OCR_BACK
+//                    if ScanConfigs.accuraConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
+//                        msg = ScanConfigs.accuraConfigs["SCAN_TITLE_OCR_BACK"] as! String
+//                    }
+//                }
+                msg = msg.replacingOccurrences(of: "%@", with: docName)
+                break
+            case SCAN_TITLE_OCR_BACK:
+                msg = ScanConfigs.SCAN_TITLE_OCR_BACK
+                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
+                    msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String
+                }
+//                if isNeedBackSideFirst() {
+//                    msg = ScanConfigs.SCAN_TITLE_OCR_FRONT
+//                    if ScanConfigs.accuraConfigs.index(forKey: "SCAN_TITLE_OCR_FRONT") != nil {
+//                        msg = ScanConfigs.accuraConfigs["SCAN_TITLE_OCR_FRONT"] as! String
+//                    }
+//                }
+                msg = msg.replacingOccurrences(of: "%@", with: docName)
+                break
+            case SCAN_TITLE_OCR:
+                msg = ScanConfigs.SCAN_TITLE_OCR
+                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR") != nil {
+                    msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR"] as! String
+                }
+                msg = msg.replacingOccurrences(of: "%@", with: docName)
+                break
+                
+            case SCAN_TITLE_MRZ_FRONT:
+                msg = ScanConfigs.SCAN_TITLE_MRZ_PDF417_FRONT
+                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_MRZ_PDF417_FRONT") != nil {
+                    msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_MRZ_PDF417_FRONT"] as! String
+                }
+                break
+                
+            case SCAN_TITLE_MRZ_BACK:
+                msg = ScanConfigs.SCAN_TITLE_MRZ_PDF417_BACK
+                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_MRZ_PDF417_BACK") != nil {
+                    msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_MRZ_PDF417_BACK"] as! String
+                }
+                break
+                
+//            case SCAN_TITLE_MRZ_PDF417_BACK:
+//                msg = ScanConfigs.SCAN_TITLE_MRZ_PDF417_FRONT
+//                if ScanConfigs.accuraConfigs.index(forKey: "SCAN_TITLE_MRZ_PDF417_FRONT") != nil {
+//                    msg = ScanConfigs.accuraConfigs["SCAN_TITLE_MRZ_PDF417_FRONT"] as! String
+//                }
+//                if isNeedBackSideFirst() {
+//                    msg = ScanConfigs.SCAN_TITLE_MRZ_PDF417_BACK
+//                    if ScanConfigs.accuraConfigs.index(forKey: "SCAN_TITLE_MRZ_PDF417_BACK") != nil {
+//                        msg = ScanConfigs.accuraConfigs["SCAN_TITLE_MRZ_PDF417_BACK"] as! String
+//                    }
+//                }
+//                break
+            case SCAN_TITLE_DLPLATE:
+                msg = ScanConfigs.SCAN_TITLE_DLPLATE
+                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_DLPLATE") != nil {
+                    msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_DLPLATE"] as! String
+                }
+                break
+            case SCAN_TITLE_BARCODE:
+                msg = ScanConfigs.SCAN_TITLE_BARCODE
+                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_BARCODE") != nil {
+                    msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_BARCODE"] as! String
+                }
+                break
+            case SCAN_TITLE_BANKCARD:
+                msg = ScanConfigs.SCAN_TITLE_BANKCARD
+                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_BANKCARD") != nil {
+                    msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_BANKCARD"] as! String
+                }
+                break
             default:
                 break
         }
+        print("messageCode:- \(messageCode) \n MSG:- \(msg)")
         _lblTitle.text = msg
     }
     
@@ -1787,6 +1866,9 @@ extension ViewController: VideoCameraWrapperDelegate {
         
         if let frontUri = ACCURAService.getImageUri(img: imageNumberPlate, name: nil) {
             results["front_img"] = frontUri
+        }
+        if let frontUriBase64 = ACCURAService.getImageToBase64(img: imageNumberPlate) {
+            results["front_img_base64"] = frontUriBase64
         }
         frontData["PlateNumber"] = plateNumber
         results["front_data"] = frontData
@@ -1968,11 +2050,22 @@ extension ViewController: VideoCameraWrapperDelegate {
         if let faceUri = ACCURAService.getImageUri(img: resultmodel.faceImage, name: nil) {
             results["face"] = faceUri
         }
+        if let imgBase64 = ACCURAService.getImageToBase64(img: resultmodel.faceImage) {
+            results["face_base64"] = imgBase64
+        }
+        
         if let frontUri = ACCURAService.getImageUri(img: resultmodel.frontSideImage, name: nil) {
             results["front_img"] = frontUri
         }
+        if let imgBase64 = ACCURAService.getImageToBase64(img: resultmodel.frontSideImage) {
+            results["front_img_base64"] = imgBase64
+        }
+        
         if let backUri = ACCURAService.getImageUri(img: resultmodel.backSideImage, name: nil) {
             results["back_img"] = backUri
+        }
+        if let imgBase64 = ACCURAService.getImageToBase64(img: resultmodel.backSideImage) {
+            results["back_img_base64"] = imgBase64
         }
         self.dictFaceDataFront = resultmodel.ocrFaceFrontData
         for data in dictFaceDataFront {
@@ -1983,6 +2076,9 @@ extension ViewController: VideoCameraWrapperDelegate {
                         let decodedimage:UIImage = UIImage(data: dataDecoded)!
                         if let sigUri = ACCURAService.getImageUri(img: decodedimage, name: nil) {
                             frontData["signature"] = sigUri
+                        }
+                        if let imgBase64 = ACCURAService.getImageToBase64(img: decodedimage) {
+                            results["signature_base64"] = imgBase64
                         }
                     }
                 } else {
@@ -2001,6 +2097,9 @@ extension ViewController: VideoCameraWrapperDelegate {
                         let decodedimage:UIImage = UIImage(data: dataDecoded)!
                         if let sigUri = ACCURAService.getImageUri(img: decodedimage, name: nil) {
                             backData["signature"] = sigUri
+                        }
+                        if let imgBase64 = ACCURAService.getImageToBase64(img: decodedimage) {
+                            results["signature_base64"] = imgBase64
                         }
                     }
                 } else {
@@ -2106,8 +2205,8 @@ extension ViewController: VideoCameraWrapperDelegate {
                    return
                } else if(BackSideImage == nil) {
                 self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
-                if ScanConfigs.accuraConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
-                    self._lblTitle.text = (ScanConfigs.accuraConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
+                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
+                    self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
                 }
                      self.flipAnimation()
                    return
@@ -2117,8 +2216,8 @@ extension ViewController: VideoCameraWrapperDelegate {
             } else {
                 if(BackSideImage == nil) {
                     self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
-                    if ScanConfigs.accuraConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
-                        self._lblTitle.text = (ScanConfigs.accuraConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
+                    if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
+                        self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
                     }
                      self.flipAnimation()
                    return
@@ -2140,21 +2239,37 @@ extension ViewController: VideoCameraWrapperDelegate {
                     if let frontUri = ACCURAService.getImageUri(img: FaceImage!, name: nil) {
                         results["face"] = frontUri
                     }
+                    if let imgBase64 = ACCURAService.getImageToBase64(img: FaceImage!) {
+                        results["face_base64"] = imgBase64
+                    }
+                    
                 }
                 if FrontImage != nil{
                     if let frontUri = ACCURAService.getImageUri(img: FrontImage!, name: nil) {
                         results["front_img"] = frontUri
                     }
+                    if let imgBase64 = ACCURAService.getImageToBase64(img: FrontImage!) {
+                        results["front_img_base64"] = imgBase64
+                    }
+                    
                 }
                 if BackSideImage != nil{
                     if let frontUri = ACCURAService.getImageUri(img: BackSideImage!, name: nil) {
                         results["back_img"] = frontUri
                     }
+                    if let imgBase64 = ACCURAService.getImageToBase64(img: BackSideImage!) {
+                        results["back_img_base64"] = imgBase64
+                    }
+                    
                 }
             } else {
                 if let frontUri = ACCURAService.getImageUri(img: FrontImage!, name: nil) {
                     results["front_img"] = frontUri
                 }
+                if let imgBase64 = ACCURAService.getImageToBase64(img: FrontImage!) {
+                    results["front_img_base64"] = imgBase64
+                }
+                
             }
             
             if(isPDF)
@@ -2241,8 +2356,8 @@ extension ViewController: VideoCameraWrapperDelegate {
                     isBackSide = true
                     
                     self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
-                    if ScanConfigs.accuraConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
-                        self._lblTitle.text = (ScanConfigs.accuraConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
+                    if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
+                        self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
                     }
                     self.flipAnimation()
                     return
@@ -2250,8 +2365,8 @@ extension ViewController: VideoCameraWrapperDelegate {
             }
             else{
                 self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
-                if ScanConfigs.accuraConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
-                    self._lblTitle.text = (ScanConfigs.accuraConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
+                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
+                    self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
                 }
                 return
             }
@@ -2292,21 +2407,34 @@ extension ViewController: VideoCameraWrapperDelegate {
             if let frontUri = ACCURAService.getImageUri(img: recogFrontImg, name: nil) {
                 results["face"] = frontUri
             }
+            if let imgBase64 = ACCURAService.getImageToBase64(img: recogFrontImg) {
+                results["face_base64"] = imgBase64
+            }
+            
         }
         
         if let recogFrontImg = front{
             if let frontUri = ACCURAService.getImageUri(img: recogFrontImg, name: nil) {
                 results["front_img"] = frontUri
             }
+            if let imgBase64 = ACCURAService.getImageToBase64(img: recogFrontImg) {
+                results["front_img_base64"] = imgBase64
+            }
+            
         }
         if let recogBackImg = back{
             if let frontUri = ACCURAService.getImageUri(img: recogBackImg, name: nil) {
                 results["back_img"] = frontUri
             }
+            if let imgBase64 = ACCURAService.getImageToBase64(img: recogBackImg) {
+                results["back_img_base64"] = imgBase64
+            }
+            
         }
         results["front_data"] = frontData
         results["back_data"] = backData
         results["type"] = "MRZ"
+        
         let pluginResult = CDVPluginResult(
             status: CDVCommandStatus_OK,
             messageAs: results
@@ -2325,6 +2453,10 @@ extension ViewController: VideoCameraWrapperDelegate {
         if let frontUri = ACCURAService.getImageUri(img: bankCardImage, name: nil) {
             results["front_img"] = frontUri
         }
+        if let imgBase64 = ACCURAService.getImageToBase64(img: bankCardImage) {
+            results["front_img_base64"] = imgBase64
+        }
+        
         for data in cardDetail {
             frontData[data.key as! String] = data.value as? String ?? data.value as? Int ?? ""
         }
@@ -2374,78 +2506,78 @@ extension ViewController: VideoCameraWrapperDelegate {
         var msg = String()
         if(message == ACCURA_ERROR_CODE_MOTION) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_MOTION
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_MOTION") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_MOTION"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_MOTION") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_MOTION"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_PROCESSING) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_PROCESSING
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_PROCESSING") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_PROCESSING"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_PROCESSING") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_PROCESSING"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_BLUR_DOCUMENT) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_BLUR_DOCUMENT
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_BLUR_DOCUMENT") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_BLUR_DOCUMENT"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_BLUR_DOCUMENT") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_BLUR_DOCUMENT"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_FACE_BLUR) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_FACE_BLUR
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_FACE_BLUR") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_FACE_BLUR"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_FACE_BLUR") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_FACE_BLUR"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_GLARE_DOCUMENT) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_GLARE_DOCUMENT
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_GLARE_DOCUMENT") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_GLARE_DOCUMENT"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_GLARE_DOCUMENT") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_GLARE_DOCUMENT"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_HOLOGRAM) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_HOLOGRAM
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_HOLOGRAM") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_HOLOGRAM"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_HOLOGRAM") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_HOLOGRAM"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_DARK_DOCUMENT) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_DARK_DOCUMENT
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_DARK_DOCUMENT") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_DARK_DOCUMENT"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_DARK_DOCUMENT") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_DARK_DOCUMENT"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_FACE) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_FACE
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_FACE") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_FACE"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_FACE") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_FACE"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_MRZ) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_MRZ
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_MRZ") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_MRZ"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_MRZ") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_MRZ"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_PASSPORT_MRZ) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_PASSPORT_MRZ
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_PASSPORT_MRZ") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_PASSPORT_MRZ"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_PASSPORT_MRZ") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_PASSPORT_MRZ"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_ID_MRZ) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_ID_MRZ
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_ID_MRZ") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_ID_MRZ"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_ID_MRZ") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_ID_MRZ"] as! String
             }
         } else if(message == ACCURA_ERROR_CODE_VISA_MRZ) {
             msg = AccuraErrorType.ACCURA_ERROR_CODE_VISA_MRZ
-            if (ScanConfigs.accuraConfigs.index(forKey: "ACCURA_ERROR_CODE_VISA_MRZ") != nil) {
-                msg = ScanConfigs.accuraConfigs["ACCURA_ERROR_CODE_VISA_MRZ"] as! String
+            if (ScanConfigs.accuraMessagesConfigs.index(forKey: "ACCURA_ERROR_CODE_VISA_MRZ") != nil) {
+                msg = ScanConfigs.accuraMessagesConfigs["ACCURA_ERROR_CODE_VISA_MRZ"] as! String
             }
         } else {
             msg = message

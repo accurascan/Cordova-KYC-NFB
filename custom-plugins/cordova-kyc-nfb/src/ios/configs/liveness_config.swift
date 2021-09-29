@@ -89,6 +89,8 @@ struct LivenessConfigs {
     static var feedBackLookLeftMessage: String = "Look over your left shoulder"
     static var feedBackLookRightMessage: String = "Look over your right shoulder"
     static var feedBackOralInfoMessage: String = "Say each digits out loud"
+    static var feedBackProcessingMessage: String = "Processing..."
+    static let isShowLogo: Bool = true
     static var enableOralVerification: Bool = false
     static var codeTextColor: String = "#FFFFFF"
 //        New changes by ANIL => End

@@ -7,11 +7,11 @@
     <description>A Cordova plugin for ACCURAService</description>
     <license>BSD-3</license>
 
+    <!-- <dependency id="cordova-plugin-file" url="https://github.com/apache/cordova-plugin-file.git"/> -->
     <dependency id="cordova-plugin-screen-orientation" url="https://github.com/apache/cordova-plugin-screen-orientation.git"/>
     <dependency id="cordova-plugin-streaming-media" url="https://github.com/nchutchind/cordova-plugin-streaming-media.git"/>
     <dependency id="cordova-plugin-device" url="https://github.com/apache/cordova-plugin-device.git"/>
-    <dependency id="cordova-plugin-file" url="https://github.com/apache/cordova-plugin-file.git"/>
-
+    
     <js-module name="Promise" src="www/Promise.js">
         <clobbers target="Promise" />
     </js-module>
@@ -52,6 +52,7 @@
         <source-file src="src/android/accura-OCR/ACCURAService.java" target-dir="src/accura/kyc/plugin/" />
         <source-file src="src/android/accura-OCR/FaceMatchActivity.java" target-dir="src/accura/kyc/plugin/" />
         <source-file src="src/android/accura-OCR/OcrActivity.java" target-dir="src/accura/kyc/plugin/" />
+        <source-file src="src/android/accura-OCR/UnsafeOkHttpClient.java" target-dir="src/accura/kyc/plugin/" />
         
         <resource-file src="src/android/accura-OCR/layout/activity_face_match.xml" target="res/layout/activity_face_match.xml"/>
          <resource-file src="src/android/accura-OCR/layout/custom_frame_layout.xml" target="res/layout/custom_frame_layout.xml"/>
@@ -116,12 +117,12 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true" warn_for_unused_master_specs_repo="false">
-                <pod name="AccuraKYC-MRZ-Hybrid" type="podspec" spec="2.2.4" />
+                <pod name="AccuraKYC-MRZ-Hybrid-Sim" type="podspec" spec="2.2.8" />
             </pods>
         </podspec>
 
         <!-- File for Without Simulator support iOS library --> <!-- For active it uncomment bellow line and comment line no 110 -->
-        <!-- <framework src="src/ios/AccuraKYC.framework" custom="true" embed="true" /> -->
+        <!-- <framework src="src/ios/AccuraKYC.xcframework" custom="true" embed="true" /> -->
 
         <!-- File for With Simulator support iOS library --> <!-- For active it uncomment bellow line and comment line no 107 -->
         <!--  <framework src="src/ios/with_simulator/AccuraKYC.framework" custom="true" embed="true" /> -->

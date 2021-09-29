@@ -28,7 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 
 public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.FaceMatchCallBack, FaceCallback {
@@ -66,6 +67,13 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
                     faceHelper.setInputImage(face);
                 }
 
+                String base64Data = bundle.getString("face_base64", "");
+                if (base64Data.length() > 0) {
+                    Bitmap face = ACCURAService.getBase64ToBitmap(base64Data);
+                    face1 = face;
+                    faceHelper.setInputImage(face);
+                }
+
             } else if (isLiveness) {
                 //Change it with v2.3.1
                 //Default liveness has face match success.
@@ -76,6 +84,14 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
                     face1 = face;
                     faceHelper.setInputImage(face);
                 }
+
+                String base64Data = bundle.getString("face_base64", "");
+                if (base64Data.length() > 0) {
+                    Bitmap face = ACCURAService.getBase64ToBitmap(base64Data);
+                    face1 = face;
+                    faceHelper.setInputImage(face);
+                }
+
             } else {
                 if (!isLiveness) {
                     if (!bundle.containsKey("face1")) {
@@ -255,6 +271,25 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
         livenessCustomization.livenessRightMoveAnimation = accura_liveness_face_right;//R.drawable.accura_liveness_face;
         livenessCustomization.voiceIcon = ic_mic;//R.drawable.ic_mic;
 
+        livenessCustomization.feedBackProcessingMessage = res.getString(R("feedBackProcessingMessage", "string"));
+        if (bundle.containsKey("feedBackProcessingMessage")) {
+            livenessCustomization.feedBackProcessingMessage = bundle.getString("feedBackProcessingMessage");
+        }
+        livenessCustomization.feedbackDialogMessage = res.getString(R("feedBackProcessingMessage", "string"));
+        if (bundle.containsKey("feedBackProcessingMessage")) {
+            livenessCustomization.feedbackDialogMessage = bundle.getString("feedBackProcessingMessage");
+        }
+
+        Boolean isShowLogo = res.getBoolean(R("isShowLogo", "bool"));
+        livenessCustomization.showlogo = isShowLogo ? 1 : 0;
+        if (bundle.containsKey("isShowLogo")) {
+            isShowLogo = bundle.getBoolean("isShowLogo");
+            livenessCustomization.showlogo = isShowLogo ? 1 : 0;
+        }
+//        int ic_logo = getResources().getIdentifier("ic_logo" , "drawable" , getPackageName());
+//        livenessCustomization.logoPath = ic_logo;
+
+
         //Not activated yet!
         // livenessCustomization.livenessLeftRotatedYDegree = (float) res.getInteger(R("livenessLeftRotatedYDegree", "integer"));
         // if (bundle.containsKey("livenessLeftRotatedYDegree")) {
@@ -266,10 +301,10 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
         // }
         
 
-//        livenessCustomization.feedBackVideoRecordingMessage = res.getString(R("feedBackVideoRecordingMessage", "string"));
-//        if (bundle.containsKey("feedBackVideoRecordingMessage")) {
-//            livenessCustomization.feedBackVideoRecordingMessage = bundle.getString("feedBackVideoRecordingMessage");
-//        }
+    //    livenessCustomization.feedBackVideoRecordingMessage = res.getString(R("feedBackVideoRecordingMessage", "string"));
+    //    if (bundle.containsKey("feedBackVideoRecordingMessage")) {
+    //        livenessCustomization.feedBackVideoRecordingMessage = bundle.getString("feedBackVideoRecordingMessage");
+    //    }
 //
 //        livenessCustomization.isRecordVideo = res.getBoolean(R("isRecordVideo", "bool"));
 //        if (bundle.containsKey("isRecordVideo")) {
@@ -344,6 +379,8 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
     }
 
     public void openFaceMatch() throws JSONException {
+
+        Resources res = getResources();
         LivenessCustomization cameraScreenCustomization = new LivenessCustomization();
         cameraScreenCustomization.backGroundColor = getResources().getColor(R("camera_Background", "color"));
         if (bundle.containsKey("backGroundColor")) {
@@ -361,18 +398,112 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
         if (bundle.containsKey("feedbackTextColor")) {
             cameraScreenCustomization.feedbackTextColor = Color.parseColor(bundle.getString("feedbackTextColor"));
         }
-        cameraScreenCustomization.feedbackTextSize = bundle.getInt("feedbackTextSize", getResources().getInteger(R("feedbackTextSize", "integer")));
-        cameraScreenCustomization.feedBackframeMessage = bundle.getString("feedBackframeMessage", getResources().getString(R("feedBackframeMessage", "string")));
-        cameraScreenCustomization.feedBackAwayMessage = bundle.getString("feedBackAwayMessage", getResources().getString(R("feedBackAwayMessage", "string")));
-        cameraScreenCustomization.feedBackOpenEyesMessage = bundle.getString("feedBackOpenEyesMessage", getResources().getString(R("feedBackOpenEyesMessage", "string")));
-        cameraScreenCustomization.feedBackCloserMessage = bundle.getString("feedBackCloserMessage", getResources().getString(R("feedBackCloserMessage", "string")));
-        cameraScreenCustomization.feedBackCenterMessage = bundle.getString("feedBackCenterMessage", getResources().getString(R("feedBackCenterMessage", "string")));
-        cameraScreenCustomization.feedBackMultipleFaceMessage = bundle.getString("feedBackMultipleFaceMessage", getResources().getString(R("feedBackMultipleFaceMessage", "string")));
-        cameraScreenCustomization.feedBackHeadStraightMessage = bundle.getString("feedBackHeadStraightMessage", getResources().getString(R("feedBackHeadStraightMessage", "string")));
-        cameraScreenCustomization.feedBackBlurFaceMessage = bundle.getString("feedBackBlurFaceMessage", getResources().getString(R("feedBackBlurFaceMessage", "string")));
-        cameraScreenCustomization.feedBackGlareFaceMessage = bundle.getString("feedBackGlareFaceMessage", getResources().getString(R("feedBackGlareFaceMessage", "string")));
-        cameraScreenCustomization.setBlurPercentage(bundle.getInt("setBlurPercentage", getResources().getInteger(R("setBlurPercentage", "integer"))));
-        cameraScreenCustomization.setGlarePercentage(bundle.getInt("setGlarePercentage_0", getResources().getInteger(R("setGlarePercentage_0", "integer"))), bundle.getInt("setGlarePercentage_1", getResources().getInteger(R("setGlarePercentage_1", "integer"))));
+
+//        cameraScreenCustomization.feedbackTextSize = bundle.getInt("feedbackTextSize", res.getInteger(R("feedbackTextSize", "integer")));
+        cameraScreenCustomization.feedbackTextSize = res.getInteger(R("feedbackTextSize", "integer"));
+        if (bundle.containsKey("feedbackTextSize")) {
+            cameraScreenCustomization.feedbackTextSize = bundle.getInt("feedbackTextSize");
+        }
+
+//        cameraScreenCustomization.feedBackframeMessage = bundle.getString("feedBackframeMessage", getResources().getString(R("feedBackframeMessage", "string")));
+        cameraScreenCustomization.feedBackframeMessage = res.getString(R("feedBackframeMessage", "string"));
+        if (bundle.containsKey("feedBackframeMessage")) {
+            cameraScreenCustomization.feedBackframeMessage = bundle.getString("feedBackframeMessage");
+        }
+
+//        cameraScreenCustomization.feedBackAwayMessage = bundle.getString("feedBackAwayMessage", getResources().getString(R("feedBackAwayMessage", "string")));
+        cameraScreenCustomization.feedBackAwayMessage = res.getString(R("feedBackAwayMessage", "string"));
+        if (bundle.containsKey("feedBackAwayMessage")) {
+            cameraScreenCustomization.feedBackAwayMessage = bundle.getString("feedBackAwayMessage");
+        }
+
+//        cameraScreenCustomization.feedBackOpenEyesMessage = bundle.getString("feedBackOpenEyesMessage", getResources().getString(R("feedBackOpenEyesMessage", "string")));
+        cameraScreenCustomization.feedBackOpenEyesMessage = res.getString(R("feedBackOpenEyesMessage", "string"));
+        if (bundle.containsKey("feedBackOpenEyesMessage")) {
+            cameraScreenCustomization.feedBackOpenEyesMessage = bundle.getString("feedBackOpenEyesMessage");
+        }
+
+//        cameraScreenCustomization.feedBackCloserMessage = bundle.getString("feedBackCloserMessage", getResources().getString(R("feedBackCloserMessage", "string")));
+        cameraScreenCustomization.feedBackCloserMessage = res.getString(R("feedBackCloserMessage", "string"));
+        if (bundle.containsKey("feedBackCloserMessage")) {
+            cameraScreenCustomization.feedBackCloserMessage = bundle.getString("feedBackCloserMessage");
+        }
+
+//        cameraScreenCustomization.feedBackCenterMessage = bundle.getString("feedBackCenterMessage", getResources().getString(R("feedBackCenterMessage", "string")));
+        cameraScreenCustomization.feedBackCenterMessage = res.getString(R("feedBackCenterMessage", "string"));
+        if (bundle.containsKey("feedBackCenterMessage")) {
+            cameraScreenCustomization.feedBackCenterMessage = bundle.getString("feedBackCenterMessage");
+        }
+
+//        cameraScreenCustomization.feedBackMultipleFaceMessage = bundle.getString("feedBackMultipleFaceMessage", getResources().getString(R("feedBackMultipleFaceMessage", "string")));
+        cameraScreenCustomization.feedBackMultipleFaceMessage = res.getString(R("feedBackMultipleFaceMessage", "string"));
+        if (bundle.containsKey("feedBackMultipleFaceMessage")) {
+            cameraScreenCustomization.feedBackMultipleFaceMessage = bundle.getString("feedBackMultipleFaceMessage");
+        }
+
+//        cameraScreenCustomization.feedBackHeadStraightMessage = bundle.getString("feedBackHeadStraightMessage", getResources().getString(R("feedBackHeadStraightMessage", "string")));
+        cameraScreenCustomization.feedBackHeadStraightMessage = res.getString(R("feedBackHeadStraightMessage", "string"));
+        if (bundle.containsKey("feedBackHeadStraightMessage")) {
+            cameraScreenCustomization.feedBackHeadStraightMessage = bundle.getString("feedBackHeadStraightMessage");
+        }
+
+//        cameraScreenCustomization.feedBackBlurFaceMessage = bundle.getString("feedBackBlurFaceMessage", getResources().getString(R("feedBackBlurFaceMessage", "string")));
+        cameraScreenCustomization.feedBackBlurFaceMessage = res.getString(R("feedBackBlurFaceMessage", "string"));
+        if (bundle.containsKey("feedBackBlurFaceMessage")) {
+            cameraScreenCustomization.feedBackBlurFaceMessage = bundle.getString("feedBackBlurFaceMessage");
+        }
+
+//        cameraScreenCustomization.feedBackGlareFaceMessage = bundle.getString("feedBackGlareFaceMessage", getResources().getString(R("feedBackGlareFaceMessage", "string")));
+        cameraScreenCustomization.feedBackGlareFaceMessage = res.getString(R("feedBackGlareFaceMessage", "string"));
+        if (bundle.containsKey("feedBackGlareFaceMessage")) {
+            cameraScreenCustomization.feedBackGlareFaceMessage = bundle.getString("feedBackGlareFaceMessage");
+        }
+
+//        cameraScreenCustomization.setBlurPercentage(bundle.getInt("setBlurPercentage", getResources().getInteger(R("setBlurPercentage", "integer"))));
+        cameraScreenCustomization.setBlurPercentage(res.getInteger(R("setBlurPercentage", "integer")));
+        if (bundle.containsKey("setBlurPercentage")) {
+            cameraScreenCustomization.setBlurPercentage(bundle.getInt("setBlurPercentage"));
+        }
+
+        cameraScreenCustomization.setLowLightTolerence(res.getInteger(R("feedbackLowLightTolerence", "integer")));
+        if (bundle.containsKey("feedbackLowLightTolerence")) {
+            cameraScreenCustomization.setLowLightTolerence(bundle.getInt("feedbackLowLightTolerence"));
+        }
+
+        cameraScreenCustomization.feedBackStartMessage = res.getString(R("feedBackStartMessage", "string"));
+        if (bundle.containsKey("feedBackStartMessage")) {
+            cameraScreenCustomization.feedBackStartMessage = bundle.getString("feedBackStartMessage");
+        }
+
+        cameraScreenCustomization.feedBackProcessingMessage = res.getString(R("feedBackProcessingMessage", "string"));
+        if (bundle.containsKey("feedBackProcessingMessage")) {
+            cameraScreenCustomization.feedBackProcessingMessage = bundle.getString("feedBackProcessingMessage");
+        }
+        cameraScreenCustomization.feedbackDialogMessage = res.getString(R("feedBackProcessingMessage", "string"));
+        if (bundle.containsKey("feedBackProcessingMessage")) {
+            cameraScreenCustomization.feedbackDialogMessage = bundle.getString("feedBackProcessingMessage");
+        }
+
+        Boolean isShowLogo = res.getBoolean(R("isShowLogo", "bool"));
+        cameraScreenCustomization.showlogo = isShowLogo ? 1 : 0;
+        if (bundle.containsKey("isShowLogo")) {
+            isShowLogo = bundle.getBoolean("isShowLogo");
+            cameraScreenCustomization.showlogo = isShowLogo ? 1 : 0;
+        }
+//        int ic_logo = getResources().getIdentifier("ic_logo" , "drawable" , getPackageName());
+//        livenessCustomization.logoPath = ic_logo;
+
+//        cameraScreenCustomization.setGlarePercentage(bundle.getInt("setGlarePercentage_0", getResources().getInteger(R("setGlarePercentage_0", "integer"))), bundle.getInt("setGlarePercentage_1", getResources().getInteger(R("setGlarePercentage_1", "integer"))));
+        int minGlare = res.getInteger(R("setGlarePercentage_0", "integer"));
+        int maxGlare = res.getInteger(R("setGlarePercentage_1", "integer"));
+        if (bundle.containsKey("setGlarePercentage_0")) {
+            minGlare = bundle.getInt("setGlarePercentage_0");
+        }
+        if (bundle.containsKey("setGlarePercentage_1")) {
+            minGlare = bundle.getInt("setGlarePercentage_1");
+        }
+        cameraScreenCustomization.setGlarePercentage(minGlare, maxGlare);
+
         Intent intent = SelfieCameraActivity.getFaceMatchCameraIntent(this, cameraScreenCustomization);
         startActivityForResult(intent, 202);
     }
@@ -449,9 +580,17 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
                         caResults.put("score", result.getLivenessResult().getLivenessScore() * 100);
                         if (result.getFaceBiometrics() != null) {
                             caResults.put("detect", ACCURAService.getImageUri(result.getFaceBiometrics(), "live_detect", getFilesDir().getAbsolutePath()));
+                            caResults.put("detect_base64", ACCURAService.getUriToBase64(result.getFaceBiometrics()));
                         }
                         if (result.getImagePath() != null) {
                             caResults.put("image_uri", result.getImagePath());
+                            try {
+                                caResults.put("image_uri_base64", ACCURAService.getUriToBase64(ACCURAService.getBitmap( this.getContentResolver(), result.getImagePath() )));
+                            } catch (FileNotFoundException e) {
+
+                            } catch (IOException e) {
+
+                            }
                         }
                         if (result.getVideoPath() != null) {
                             caResults.put("video_uri", result.getVideoPath());
@@ -478,8 +617,10 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
                         String fileDir = getFilesDir().getAbsolutePath();
                         if (detectFace1 == null) {
                             results.put("img_1", ACCURAService.getImageUri(ACCURAService.face1, "img_1", fileDir));
+                            results.put("img_1_base64", ACCURAService.getUriToBase64(ACCURAService.face1));
                         } else {
                             results.put("img_1", ACCURAService.getImageUri(detectFace1, "img_1", fileDir));
+                            results.put("img_1_base64", ACCURAService.getUriToBase64(detectFace1));
                         }
 
                     } catch (JSONException e) {
@@ -535,9 +676,13 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
                     results.put("with_face", witFace);
                     if (!witFace) {
                         results.put("img_1", ACCURAService.getImageUri(detectFace1, "img_1", fileDir));
+                        results.put("img_1_base64", ACCURAService.getUriToBase64(detectFace1));
+
                         results.put("img_2", ACCURAService.getImageUri(detectFace2, "img_2", fileDir));
+                        results.put("img_2_base64", ACCURAService.getUriToBase64(detectFace2));
                     } else {
                         results.put("detect", ACCURAService.getImageUri(detectFace2, "img_1", fileDir));
+                        results.put("detect_base64", ACCURAService.getUriToBase64(detectFace2));
                     }
                     Log.i(TAG, "onFaceMatch !isLiveness :- " + results);
                     ACCURAService.faceCL.success(results);

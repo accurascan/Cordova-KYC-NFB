@@ -25,8 +25,8 @@ exports.getMetadata = function (success, error) {
     return execAsPromise(success, error, 'ACCURAService', 'getMetadata', []);
 };
 
-exports.startMRZ = function (accuraConfigs = {}, type = 'other_mrz', countryList = 'all', success, error) {
-    return execAsPromise(success, error, 'ACCURAService', 'startMRZ', [accuraConfigs, type, countryList, screen.orientation.type]);
+exports.startMRZ = function (accuraConfigs = {}, messagesConfigs = {},  type = 'other_mrz', countryList = 'all', success, error) {
+    return execAsPromise(success, error, 'ACCURAService', 'startMRZ', [accuraConfigs, messagesConfigs, type, countryList, screen.orientation.type]);
 };
 
 exports.startLiveness = function (accuraConfigs = {}, livenessConfigs = {}, success, error) {

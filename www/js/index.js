@@ -79,6 +79,7 @@ var cardSelected = '';
 var mrzSelected = 'other_mrz';
 var mrzCountryList = 'all';
 var barcodeSelected = '';
+var language = 'ar';
 
 var countrySelectedId;
 var countryCard;
@@ -103,18 +104,19 @@ function getMetadata() {
 }
 
 function startLiveness() {
-    var accuraConfs = { enableLogs: false, with_face: true, face_uri: facematchURI };
+    // var accuraConfs = { enableLogs: false, with_face: true, face_uri: facematchURI }; or
+    var accuraConfs = { enableLogs: false, with_face: true, face_base64: faceMatchBase64 };
     var config = {
         feedbackTextSize: 18,
-        feedBackframeMessage: 'Frame Your Face',
-        feedBackAwayMessage: 'Move Phone Away',
-        feedBackOpenEyesMessage: 'Keep Your Eyes Open',
-        feedBackCloserMessage: 'Move Phone Closer',
-        feedBackCenterMessage: 'Move Phone Center',
-        feedBackMultipleFaceMessage: 'Multiple Face Detected',
-        feedBackHeadStraightMessage: 'Keep Your Head Straight',
-        feedBackBlurFaceMessage: 'Blur Detected Over Face',
-        feedBackGlareFaceMessage: 'Glare Detected',
+        feedBackframeMessage: language == 'en' ? 'Frame Your Face' : 'ضع إطارًا لوجهك',
+        feedBackAwayMessage: language == 'en' ? 'Move Phone Away' : 'انقل الهاتف بعيدًا',
+        feedBackOpenEyesMessage: language == 'en' ? 'Keep Your Eyes Open' : 'أبق أعينك مفتوحة',
+        feedBackCloserMessage: language == 'en' ? 'Move Phone Closer' : 'نقل الهاتف أقرب',
+        feedBackCenterMessage: language == 'en' ? 'Move Phone Center' : 'نقل مركز الهاتف',
+        feedBackMultipleFaceMessage: language == 'en' ? 'Multiple Face Detected' : 'تم اكتشاف وجوه متعددة',
+        feedBackHeadStraightMessage: language == 'en' ? 'Keep Your Head Straight' : 'حافظ على استقامة رأسك',
+        feedBackBlurFaceMessage: language == 'en' ? 'Blur Detected Over Face' : 'تم اكتشاف ضبابية على الوجه',
+        feedBackGlareFaceMessage: language == 'en' ? 'Glare Detected' : 'تم الكشف عن الوهج',
         // <!--// 0 for clean face and 100 for Blurry face or set it -1 to remove blur filter-->
         setBlurPercentage: 80,
         // <!--// Set min percentage for glare or set it -1 to remove glare filter-->
@@ -123,15 +125,18 @@ function startLiveness() {
         setGlarePercentage_1: -1,
         isSaveImage: true,
         liveness_url: 'Your liveness url',
+
         //        New SDK changes in configs
-        feedBackLowLightMessage: 'Low light detected',
+        feedBackLowLightMessage: language == 'en' ? 'Low light detected' : 'تم الكشف عن إضاءة منخفضة',
         feedbackLowLightTolerence: 39,
-        feedBackStartMessage: 'Put your face inside the oval',
-        feedBackLookLeftMessage: 'Look over your left shoulder',
-        feedBackLookRightMessage: 'Look over your right shoulder',
-        feedBackOralInfoMessage: 'Say each digits out loud',
+        feedBackStartMessage: language == 'en' ? 'Put your face inside the oval' : 'ضع وجهك داخل الشكل البيضاوي',
+        feedBackLookLeftMessage: language == 'en' ? 'Look over your left shoulder' : 'انظر فوق كتفك الأيسر',
+        feedBackLookRightMessage: language == 'en' ? 'Look over your right shoulder' : 'انظر فوق كتفك الأيمن',
+        feedBackOralInfoMessage: language == 'en' ? 'Say each digits out loud' : 'قل كل رقم بصوت عالٍ',
+        feedBackProcessingMessage: language == 'en' ? 'Processing...' : 'يعالج...',
         enableOralVerification: false,
-        codeTextColor: 'white'
+        codeTextColor: 'white',
+        isShowLogo: false
     };
     $('#ls-score,#fm-score').text("0.00 %");
     accura.startLiveness(accuraConfs, config, function (result) {
@@ -217,31 +222,37 @@ function openVideoForPlay() {
 }
 
 var facematchURI;
+var faceMatchBase64;
 
 function startFaceMatch(withFace = false, face1 = false, face2 = false) {
-    var accuraConfs = { with_face: withFace, face_uri: facematchURI, enableLogs: false };
+    // var accuraConfs = { with_face: withFace, face_uri: facematchURI, enableLogs: false };
+    var accuraConfs = { with_face: withFace, face_base64: faceMatchBase64, enableLogs: false };
     if (!withFace) { delete accuraConfs.face_uri; }
     if (face1) { face2 = false; }
     if (face2) { face1 = false; }
     accuraConfs.face1 = face1;
     accuraConfs.face2 = face2;
     var config = {
-        fm_feedbackTextSize: 18,
-        fm_feedBackframeMessage: 'Frame Your Face',
-        fm_feedBackAwayMessage: 'Move Phone Away',
-        fm_feedBackOpenEyesMessage: 'Keep Your Eyes Open',
-        fm_feedBackCloserMessage: 'Move Phone Closer',
-        fm_feedBackCenterMessage: 'Move Phone Center',
-        fm_feedBackMultipleFaceMessage: 'Multiple Face Detected',
-        fm_feedBackHeadStraightMessage: 'Keep Your Head Straight',
-        fm_feedBackBlurFaceMessage: 'Blur Detected Over Face',
-        fm_feedBackGlareFaceMessage: 'Glare Detected',
+        feedbackTextSize: 18,
+        feedBackLowLightMessage: language == 'en' ? 'Low light detected' : 'تم الكشف عن إضاءة منخفضة',
+        feedBackStartMessage: language == 'en' ? 'Put your face inside the oval' : 'ضع وجهك داخل الشكل البيضاوي',
+        feedBackframeMessage: language == 'en' ?  'Frame Your Face' : 'ضع إطارًا لوجهك',
+        feedBackAwayMessage: language == 'en' ?  'Move Phone Away' : 'انقل الهاتف بعيدًا',
+        feedBackOpenEyesMessage: language == 'en' ?  'Keep Your Eyes Open' : 'أبق أعينك مفتوحة',
+        feedBackCloserMessage: language == 'en' ?  'Move Phone Closer' : 'نقل الهاتف أقرب',
+        feedBackCenterMessage: language == 'en' ?  'Move Phone Center' : 'نقل مركز الهاتف',
+        feedBackMultipleFaceMessage: language == 'en' ?  'Multiple Face Detected' : 'تم اكتشاف وجوه متعددة',
+        feedBackHeadStraightMessage: language == 'en' ?  'Keep Your Head Straight' : 'حافظ على استقامة رأسك',
+        feedBackBlurFaceMessage: language == 'en' ?  'Blur Detected Over Face' : 'تم اكتشاف ضبابية على الوجه',
+        feedBackGlareFaceMessage: language == 'en' ?  'Glare Detected' : 'تم الكشف عن الوهج',
         // <!--// 0 for clean face and 100 for Blurry face or set it -1 to remove blur filter-->
-        fm_setBlurPercentage: 80,
+        setBlurPercentage: 80,
         // <!--// Set min percentage for glare or set it -1 to remove glare filter-->
-        fm_setGlarePercentage_0: -1,
+        setGlarePercentage_0: -1,
         // <!--// Set max percentage for glare or set it -1 to remove glare filter-->
-        fm_setGlarePercentage_1: -1,
+        setGlarePercentage_1: -1,
+        isShowLogo: false,
+        feedBackProcessingMessage: language == 'en' ? 'Processing...' : 'يعالج...',
     };
     $('#ls-score,#fm-score').text("0.00 %");
     accura.startFaceMatch(accuraConfs, config, function (result) {
@@ -282,7 +293,37 @@ function startFaceMatch(withFace = false, face1 = false, face2 = false) {
 }
 
 function startMRZ() {
-    accura.startMRZ({ enableLogs: false }, mrzSelected, mrzCountryList, function (result) {
+    
+    var config = {
+        ACCURA_ERROR_CODE_MOTION: language == 'en' ? 'Keep Document Steady' : 'حافظ على ثبات المستند',
+        ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME: language == 'en' ? 'Keep document in frame' : 'احتفظ بالمستند في الإطار',
+        ACCURA_ERROR_CODE_BRING_DOCUMENT_IN_FRAME: language == 'en' ?  'Bring card near to frame' : 'إحضار البطاقة بالقرب من الإطار',
+        ACCURA_ERROR_CODE_PROCESSING: language == 'en' ?  'Processing…' : 'يعالج…',
+        ACCURA_ERROR_CODE_BLUR_DOCUMENT: language == 'en' ?  'Blur detect in document' : 'كشف التمويه في المستند',
+        ACCURA_ERROR_CODE_FACE_BLUR: language == 'en' ?  'Blur detected over face' : 'تم الكشف عن ضبابية على الوجه',
+        ACCURA_ERROR_CODE_GLARE_DOCUMENT: language == 'en' ?  'Glare detect in document' : 'كشف الوهج في المستند',
+        ACCURA_ERROR_CODE_HOLOGRAM: language == 'en' ?  'Hologram Detected' : 'تم الكشف عن صورة ثلاثية الأبعاد', 
+        ACCURA_ERROR_CODE_DARK_DOCUMENT: language == 'en' ?  'Low lighting detected' : 'تم الكشف عن إضاءة منخفضة',
+        ACCURA_ERROR_CODE_PHOTO_COPY_DOCUMENT: language == 'en' ?  'Can not accept Photo Copy Document' : 'لا يمكن قبول مستند نسخ الصور',
+        ACCURA_ERROR_CODE_FACE: language == 'en' ?  'Face not detected' : 'لم يتم الكشف عن الوجه',
+        ACCURA_ERROR_CODE_MRZ: language == 'en' ?  'MRZ not detected' : 'لم يتم الكشف عن MRZ',
+        ACCURA_ERROR_CODE_PASSPORT_MRZ: language == 'en' ?  'Passport MRZ not detected' : 'لم يتم الكشف عن MRZ جواز سفر',
+        ACCURA_ERROR_CODE_ID_MRZ: language == 'en' ?  'ID card MRZ not detected' : 'لم يتم الكشف عن بطاقة الهوية MRZ',
+        ACCURA_ERROR_CODE_VISA_MRZ: language == 'en' ?  'Visa MRZ not detected' : 'لم يتم الكشف عن Visa MRZ',
+        ACCURA_ERROR_CODE_WRONG_SIDE: language == 'en' ?  'Scanning wrong side of document' : 'مسح الجانب الخطأ من المستند',
+        ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE: language == 'en' ?  'Document is upside down. Place it properly' : 'المستند مقلوب. ضعه بشكل صحيح',
+    
+        SCAN_TITLE_OCR_FRONT: language == 'en' ?  'Scan Front Side of' : 'مسح الجانب الأمامي من',
+        SCAN_TITLE_OCR_BACK: language == 'en' ?  'Scan Back Side of' : 'مسح الجانب الخلفي من',
+        SCAN_TITLE_OCR: language == 'en' ?  'Scan' : 'مسح',
+        SCAN_TITLE_BANKCARD: language == 'en' ?  'Scan Bank Card' : 'مسح البطاقة المصرفية',
+        SCAN_TITLE_BARCODE: language == 'en' ?  'Scan Barcode' : 'مسح الرمز الشريطى',
+        SCAN_TITLE_MRZ_PDF417_FRONT: language == 'en' ?  'Scan Front Side of Document' : 'مسح الوجه الأمامي للمستند',
+        SCAN_TITLE_MRZ_PDF417_BACK: language == 'en' ?  'Now Scan Back Side of Document' : 'الآن مسح الجانب الخلفي من المستند',
+        SCAN_TITLE_DLPLATE: language == 'en' ?  'Scan Number Plate' : 'مسح رقم اللوحة'
+    
+    };
+    accura.startMRZ({ enableLogs: false }, config, mrzSelected, mrzCountryList, function (result) {
         generateResult(result);
     }, function (error) {
         alert(error);
@@ -408,6 +449,7 @@ function generateResult(result) {
             "   <h5 id='fm-score'>0.00 %</h5>" +
             "</div>";
         facematchURI = result.face;
+        faceMatchBase64 = result.face_base64;
         getImage('face', result.face, true);
     }
     sides.forEach(function (side, i) {

@@ -1,10 +1,3 @@
-//
-//  FMController.swift
-//  Accura ORC and Facematch
-//
-//  Created by apple on 25/07/2021.
-//
-
 import UIKit
 import AccuraKYC
 
@@ -25,10 +18,18 @@ class FMController: UIViewController, FacematchData {
                 if let img1 = ACCURAService.getImageUri(img: gl.face1!, name: nil) {
                     results["img_1"] = img1
                 }
+                if let imgBase64 = ACCURAService.getImageToBase64(img: gl.face1!) {
+                    results["img_1_base64"] = imgBase64
+                }
+                
             } else {
                 if let img1 = ACCURAService.getImageUri(img: ACCURAService.resizeImage(image: gl.face1!, targetSize: gl.face1Detect!.bound), name: nil) {
                     results["img_1"] = img1
                 }
+                if let imgBase64 = ACCURAService.getImageToBase64(img: ACCURAService.resizeImage(image: gl.face1!, targetSize: gl.face1Detect!.bound)) {
+                    results["img_1_base64"] = imgBase64
+                }
+                
             }
             if results.index(forKey: "img_1") != nil {
                 let pluginResult = CDVPluginResult(
@@ -64,12 +65,23 @@ class FMController: UIViewController, FacematchData {
                 if let img1 = ACCURAService.getImageUri(img: gl.face1!, name: nil) {
                     results["img_1"] = img1
                 }
+                if let imgBase64 = ACCURAService.getImageToBase64(img: gl.face1!) {
+                    results["img_1_base64"] = imgBase64
+                }
+                
                 if let img2 = ACCURAService.getImageUri(img: gl.face2!, name: nil) {
                     results["img_2"] = img2
                 }
+                if let imgBase64 = ACCURAService.getImageToBase64(img: gl.face2!) {
+                    results["img_2_base64"] = imgBase64
+                }
+                
             } else {
                 if let img1 = ACCURAService.getImageUri(img: ACCURAService.resizeImage(image: gl.face2!, targetSize: gl.face2Detect!.bound), name: nil) {
                     results["detect"] = img1
+                }
+                if let imgBase64 = ACCURAService.getImageToBase64(img: ACCURAService.resizeImage(image: gl.face2!, targetSize: gl.face2Detect!.bound)) {
+                    results["detect_base64"] = imgBase64
                 }
             }
             let pluginResult = CDVPluginResult(
@@ -111,6 +123,13 @@ class FMController: UIViewController, FacematchData {
                 if ScanConfigs.accuraConfigs.index(forKey: "face_uri") != nil {
                     if let face = ACCURAService.getImageFromUri(path: ScanConfigs.accuraConfigs["face_uri"] as! String) {
                         gl.face1 = face
+                        gl.face1Detect = EngineWrapper.detectSourceFaces(gl.face1)
+                    }
+                } 
+                if ScanConfigs.accuraConfigs.index(forKey: "face_base64") != nil {
+                    let newImageData = Data(base64Encoded: ScanConfigs.accuraConfigs["face_base64"] as! String)
+                    if let newImageData = newImageData {
+                        gl.face1 = UIImage(data: newImageData)
                         gl.face1Detect = EngineWrapper.detectSourceFaces(gl.face1)
                     }
                 }
@@ -238,6 +257,14 @@ class FMController: UIViewController, FacematchData {
             liveness.setFeedBackGlareFaceMessage(livenessConfigs["feedBackGlareFaceMessage"] as! String)
         }
         
+        liveness.isShowLogoImage(LivenessConfigs.isShowLogo)
+        if livenessConfigs.index(forKey: "isShowLogo") != nil {
+            liveness.isShowLogoImage(livenessConfigs["isShowLogo"] as! Bool)
+        }
+        liveness.setFeedBackProcessingMessage(LivenessConfigs.feedBackProcessingMessage)
+        if livenessConfigs.index(forKey: "feedBackProcessingMessage") != nil {
+            liveness.setFeedBackProcessingMessage(livenessConfigs["feedBackProcessingMessage"] as! String)
+        }
         
         // 0 for clean face and 100 for Blurry face
         liveness.setBlurPercentage(Int32(LivenessConfigs.setBlurPercentage)) // set blure percentage -1 to remove this filter

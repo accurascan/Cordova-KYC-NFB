@@ -32,6 +32,8 @@ struct ScanConfigs {
     
     static var accuraConfigs:[String: Any] = [:]
     
+    static var accuraMessagesConfigs:[String: Any] = [:]
+    
     static var mrzType = ""
     
     static var mrzCountryList = ""

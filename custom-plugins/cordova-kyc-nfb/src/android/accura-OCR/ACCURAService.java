@@ -1,6 +1,7 @@
 package accura.kyc.plugin;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -14,11 +15,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +59,31 @@ public class ACCURAService extends CordovaPlugin {
         }
         return salt.toString();
     }
+
+    public static String getUriToBase64(Bitmap bitmap) {
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream .toByteArray();
+        String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+        return encoded;
+    }
+
+    public static Bitmap getBase64ToBitmap(String base64Image) {
+
+        byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
+    }
+
+    public static Bitmap getBitmap(ContentResolver cr, Uri url)
+            throws FileNotFoundException, IOException {
+        InputStream input = cr.openInputStream(url);
+        Bitmap bitmap = BitmapFactory.decodeStream(input);
+        input.close();
+        return bitmap;
+    }
+
 
     public static String getImageUri(Bitmap bitmap, String name, String path) {
         OutputStream fOut = null;
@@ -117,6 +150,7 @@ public class ACCURAService extends CordovaPlugin {
             JSONObject results = new JSONObject();
             RecogEngine.SDKModel sdkModel = recogEngine.initEngine(cordova.getContext());
             if (sdkModel.i >= 0) {
+                AndroidNetworking.initialize(cordova.getContext(), UnsafeOkHttpClient.getUnsafeOkHttpClient());
                 results.put("sdk_version", recogEngine.getVersion());
                 results.put("isValid", true);
                 // if OCR enable then get card list
@@ -137,6 +171,7 @@ public class ACCURAService extends CordovaPlugin {
             } else {
                 results.put("isValid", false);
             }
+            Log.i(TAG, "Result:- " + results);
             callbackContext.success(results);
             return true;
         }
@@ -163,11 +198,13 @@ public class ACCURAService extends CordovaPlugin {
             }
         }
         if (action.equals("startMRZ")) {
-            String type = args.getString(1);
-            String countryList = args.getString(2);
-            String appOrientation = args.getString(3);
-            Intent myIntent = new Intent(cordova.getActivity(), accura.kyc.plugin.OcrActivity.class);
+            JSONObject config = args.getJSONObject(1);
+            String type = args.getString(2);
+            String countryList = args.getString(3);
+            String appOrientation = args.getString(4);
+            Intent myIntent = new Intent(cordova.getActivity(), OcrActivity.class);
             myIntent = addDefaultConfigs(myIntent, accuraConf);
+            myIntent = addDefaultConfigs(myIntent, config);
             myIntent.putExtra("type", "mrz");
             myIntent.putExtra("country-list", countryList);
             myIntent.putExtra("sub-type", type);

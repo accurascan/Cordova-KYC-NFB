@@ -25,10 +25,13 @@
     <string name="feedBackBlurFaceMessage">Blur Detected Over Face</string>
     <string name="feedBackGlareFaceMessage">Glare Detected</string>
     <string name="feedBackVideoRecordingMessage">Processing…</string>
+    <string name="feedBackProcessingMessage">Processing…</string>
+    <string name="feedbackDialogMessage">Processing…</string>
     <integer name="setBlurPercentage">80</integer>
     <integer name="setGlarePercentage_0">-1</integer>
     <integer name="setGlarePercentage_1">-1</integer>
     <bool name="isSaveImage">true</bool>
+    <bool name="isShowLogo">true</bool>
     <!--// Video recording settings-->
     <bool name="isRecordVideo">true</bool>
     <!--// video length in seconds-->
