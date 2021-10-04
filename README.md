@@ -73,6 +73,7 @@ Here you have two options for android that which library you want to use for thi
 |rg_setBackSide|boolean|false|set true to use backside|
 |rg_setEnableMediaPlayer|boolean|true|false to disable default sound and default it is true|
 |rg_customMediaURL|string|null|if given a valid URL it will download the file and use it as an alert sound.|
+|IS_SHOW_LOGO|boolean|true||
 |SCAN_TITLE_OCR_FRONT|string|Scan Front Side of %s||
 |SCAN_TITLE_OCR_BACK|string|Scan Back Side of %s||
 |SCAN_TITLE_OCR|string|Scan %s||
@@ -242,15 +243,9 @@ Contact AccuraScan at contact@accurascan.com for Liveness SDK or API
 
  	 face: URI?
 
-     face_base64: String?
-
  	 front_img: URI?
 
-     front_img_base64: String?
-
  	 back_img: URI?
-
-     back_img_base64: String?
 
 }
 
@@ -270,11 +265,7 @@ Contact AccuraScan at contact@accurascan.com for Liveness SDK or API
 
  	 detect: URI?,
 
-     detect_base64: String?
-
  	 image_uri: URI?,
-    
-     image_uri_base64: String?
 
  	 video_uri: URI?,
 
@@ -298,15 +289,9 @@ Contact AccuraScan at contact@accurascan.com for Liveness SDK or API
 
  	 detect: URI? (when with_face = true),
 
-     detect_base64: String? (when with_face = true),
-
  	 img_1: URI? (when with_face = false),
 
-     img_1_base64: String? (when with_face = false),
-
  	 img_2: URI? (when with_face = false),
-
-     img_2_base64: String? (when with_face = false),
 
  	 score: Float
 
@@ -831,6 +816,7 @@ function startMRZ() {
         ACCURA_ERROR_CODE_WRONG_SIDE: ?  'Scanning wrong side of document',
         ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE: ?  'Document is upside down. Place it properly',
     
+        IS_SHOW_LOGO: true,
         SCAN_TITLE_MRZ_PDF417_FRONT: ?  'Scan Front Side of Document',
         SCAN_TITLE_MRZ_PDF417_BACK: ?  'Now Scan Back Side of Document',
     };
@@ -1572,8 +1558,6 @@ These are the paths for licences:
  	 Replace your licensees in these locations.
 
 
-
-
 1. ## Configurations
 Structure:
 
@@ -1599,6 +1583,11 @@ File: /cordova-kyc-nfb/src/android/liveness_config.xml
 You can change default settings here.
 1. ### Recog Engine Initial Settings
 File: /cordova-kyc-nfb/src/android/recog_engine_config.xml
+
+1. ### Change watermark logo.
+File: /cordova-kyc-nfb/src/android/accura-OCR/drawables/drawable/ic_logo.png
+
+Replace this logo image with your own.
 
 1. ## Accura AAR framework 
  	 Accura framework file is located at:
@@ -1670,6 +1659,11 @@ File: /cordova-kyc-nfb/src/ios/liveness_config.swift
 You can change default settings here.
 1. ### Recog Engine Initial Settings
 File: /cordova-kyc-nfb/src/ios/recog_engine_config.swift
+
+1. ### Change watermark logo.
+File: /cordova-kyc-nfb/src/ios/accura-OCR/resources/ic_logo.imageset/ic_logo.png
+
+Replace this logo image with your own.
 
 # Commit Modifications
  		 After all the modifications or any modification open CMD at root(i.e \accura-cordova\) and run the following commands one by one

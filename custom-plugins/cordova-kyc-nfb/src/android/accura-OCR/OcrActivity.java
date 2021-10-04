@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,7 +50,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static accura.kyc.plugin.ACCURAService.getImageUri;
-import static accura.kyc.plugin.ACCURAService.getUriToBase64;
 import static accura.kyc.plugin.ACCURAService.getSaltString;
 
 public class OcrActivity extends SensorsActivity implements OcrCallback {
@@ -129,6 +129,14 @@ public class OcrActivity extends SensorsActivity implements OcrCallback {
         setTheme(R("AppThemeNoActionBar", "style"));
         requestWindowFeature(Window.FEATURE_NO_TITLE); // Hide the window title.
         setContentView(R("ocr_activity", "layout"));
+
+        int resID = getResources().getIdentifier("viewImageLayer", "id", getPackageName());
+        LinearLayout viewImageLayer= (LinearLayout) findViewById(resID);// change id here
+        if (bundle.containsKey("IS_SHOW_LOGO")) {
+            Boolean isShow = bundle.getBoolean("IS_SHOW_LOGO");
+            Log.i(TAG, "isSHow:- " + isShow);
+            viewImageLayer.setVisibility( isShow ? View.VISIBLE : View.GONE);
+        }
         AccuraLog.loge(TAG, "Start Camera Activity");
         init();
         try {
@@ -436,7 +444,6 @@ public class OcrActivity extends SensorsActivity implements OcrCallback {
         if (needCallback) {
             RecogResult recogResult = null;
             String frontUri = null, backUri = null, faceUri = null;
-            String frontUriBase64 = null, backUriBase64 = null, faceUriBase64 = null;
             JSONObject results = new JSONObject();
             JSONObject frontResult = new JSONObject();
             JSONObject mrzResult = new JSONObject();
@@ -449,15 +456,12 @@ public class OcrActivity extends SensorsActivity implements OcrCallback {
                     frontResult = setMRZData(recogResult);
                     if (recogResult.faceBitmap != null) {
                         faceUri = getImageUri(recogResult.faceBitmap, "face", fileDir);
-                        faceUriBase64 = getUriToBase64(recogResult.faceBitmap);
                     }
                     if (recogResult.docFrontBitmap != null) {
                         frontUri = getImageUri(recogResult.docFrontBitmap, "front", fileDir);
-                        frontUriBase64 = getUriToBase64(recogResult.docFrontBitmap);
                     }
                     if (recogResult.docBackBitmap != null) {
                         backUri = getImageUri(recogResult.docBackBitmap, "back", fileDir);
-                        backUriBase64 = getUriToBase64(recogResult.docBackBitmap);
                     }
                 }
 
@@ -472,16 +476,6 @@ public class OcrActivity extends SensorsActivity implements OcrCallback {
                 if (backUri != null) {
                     results.put("back_img", backUri);
                 }
-                if (faceUriBase64 != null) {
-                    results.put("face_base64", faceUriBase64);
-                }
-                if (frontUriBase64 != null) {
-                    results.put("front_img_base64", frontUriBase64);
-                }
-                if (backUriBase64 != null) {
-                    results.put("back_img_base64", backUriBase64);
-                }
-
                 results.put("type", type);
                 results.put("back_data", backResult);
                 results.put("front_data", frontResult);

@@ -245,6 +245,7 @@ function startFaceMatch(withFace = false, face1 = false, face2 = false) {
         feedBackHeadStraightMessage: language == 'en' ?  'Keep Your Head Straight' : 'حافظ على استقامة رأسك',
         feedBackBlurFaceMessage: language == 'en' ?  'Blur Detected Over Face' : 'تم اكتشاف ضبابية على الوجه',
         feedBackGlareFaceMessage: language == 'en' ?  'Glare Detected' : 'تم الكشف عن الوهج',
+        feedBackProcessingMessage: language == 'en' ? 'Processing...' : 'يعالج...',
         // <!--// 0 for clean face and 100 for Blurry face or set it -1 to remove blur filter-->
         setBlurPercentage: 80,
         // <!--// Set min percentage for glare or set it -1 to remove glare filter-->
@@ -252,7 +253,6 @@ function startFaceMatch(withFace = false, face1 = false, face2 = false) {
         // <!--// Set max percentage for glare or set it -1 to remove glare filter-->
         setGlarePercentage_1: -1,
         isShowLogo: false,
-        feedBackProcessingMessage: language == 'en' ? 'Processing...' : 'يعالج...',
     };
     $('#ls-score,#fm-score').text("0.00 %");
     accura.startFaceMatch(accuraConfs, config, function (result) {
@@ -313,15 +313,9 @@ function startMRZ() {
         ACCURA_ERROR_CODE_WRONG_SIDE: language == 'en' ?  'Scanning wrong side of document' : 'مسح الجانب الخطأ من المستند',
         ACCURA_ERROR_CODE_UPSIDE_DOWN_SIDE: language == 'en' ?  'Document is upside down. Place it properly' : 'المستند مقلوب. ضعه بشكل صحيح',
     
-        SCAN_TITLE_OCR_FRONT: language == 'en' ?  'Scan Front Side of' : 'مسح الجانب الأمامي من',
-        SCAN_TITLE_OCR_BACK: language == 'en' ?  'Scan Back Side of' : 'مسح الجانب الخلفي من',
-        SCAN_TITLE_OCR: language == 'en' ?  'Scan' : 'مسح',
-        SCAN_TITLE_BANKCARD: language == 'en' ?  'Scan Bank Card' : 'مسح البطاقة المصرفية',
-        SCAN_TITLE_BARCODE: language == 'en' ?  'Scan Barcode' : 'مسح الرمز الشريطى',
+        IS_SHOW_LOGO: true,
         SCAN_TITLE_MRZ_PDF417_FRONT: language == 'en' ?  'Scan Front Side of Document' : 'مسح الوجه الأمامي للمستند',
         SCAN_TITLE_MRZ_PDF417_BACK: language == 'en' ?  'Now Scan Back Side of Document' : 'الآن مسح الجانب الخلفي من المستند',
-        SCAN_TITLE_DLPLATE: language == 'en' ?  'Scan Number Plate' : 'مسح رقم اللوحة'
-    
     };
     accura.startMRZ({ enableLogs: false }, config, mrzSelected, mrzCountryList, function (result) {
         generateResult(result);

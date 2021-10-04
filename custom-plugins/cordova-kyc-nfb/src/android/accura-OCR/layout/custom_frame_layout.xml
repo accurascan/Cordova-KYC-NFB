@@ -108,6 +108,7 @@
             android:visibility="gone" />
 
         <LinearLayout
+            android:id="@+id/viewImageLayer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -119,21 +120,21 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true">
 
-            <com.accurascan.customview.CustomTextView
+            <!-- <com.accurascan.customview.CustomTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Powered By"
                 android:textColor="#DDDDDD"
-                android:layout_gravity="right"
+                android:layout_gravity="center"
                 android:layout_marginEnd="1dp"
                 android:layout_marginBottom="-1dp"
                 android:textSize="8sp"
-                app:typeface="ALLER_STD_REG"/>
+                app:typeface="ALLER_STD_REG"/> -->
 
             <ImageView
                 android:layout_width="70dp"
-                android:layout_height="15dp"
-                android:src="@drawable/accura_logo"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_logo"
                 />
         </LinearLayout>
 

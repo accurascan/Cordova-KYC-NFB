@@ -55,21 +55,6 @@ struct gl {
       return String((0..<length).map{ _ in letters.randomElement()! })
     }
     
-    static func getImageToBase64(img: UIImage) -> String? {
-        return img.jpegData(compressionQuality: 1)?.base64EncodedString()
-    }
-    
-    static func getUriToBase64(uri: String) -> String? {
-        
-        let imageView = UIImageView()
-        if let image = UIImage(contentsOfFile: uri) {
-            imageView.contentMode = .scaleAspectFit
-            imageView.image = image
-            return image.jpegData(compressionQuality: 1)?.base64EncodedString()
-        }
-        return nil
-    }
-    
     static func getImageUri(img: UIImage, name: String?) -> String? {
         var file = ACCURAService.randomString(length: 6)
         if let filename = name {

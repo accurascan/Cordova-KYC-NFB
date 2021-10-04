@@ -32,21 +32,14 @@ class LVController: UIViewController, LivenessData
                 if let detectImage = ACCURAService.getImageUri(img: ACCURAService.resizeImage(image: livenessImage, targetSize: gl.face2Detect!.bound), name: nil) {
                     results["detect"] = detectImage
                 }
-                if let imgBase64 = ACCURAService.getImageToBase64(img: ACCURAService.resizeImage(image: livenessImage, targetSize: gl.face2Detect!.bound)) {
-                    results["detect_base64"] = imgBase64
-                }
                 
             } else {
                 if let detectImage = ACCURAService.getImageUri(img: livenessImage, name: nil) {
                     results["detect"] = detectImage
                 }
-                if let imgBase64 = ACCURAService.getImageToBase64(img: livenessImage) {
-                    results["detect_base64"] = imgBase64
-                }
             }
             if imagePath != "" {
                 results["image_uri"] = "file://\(imagePath!)"
-                results["image_uri_base64"] = ACCURAService.getUriToBase64(uri: "file://\(imagePath!)")
             }
 //            if videoPath != "" {
                 results["video_uri"] = ""
@@ -113,23 +106,15 @@ class LVController: UIViewController, LivenessData
                 if let detectImage = ACCURAService.getImageUri(img: ACCURAService.resizeImage(image: livenessImage, targetSize: gl.face2Detect!.bound), name: nil) {
                     results["detect"] = detectImage
                 }
-                if let imgBase64 = ACCURAService.getImageToBase64(img: ACCURAService.resizeImage(image: livenessImage, targetSize: gl.face2Detect!.bound)) {
-                    results["detect_base64"] = imgBase64
-                }
-                
                 
             } else {
                 
                 if let detectImage = ACCURAService.getImageUri(img: livenessImage, name: nil) {
                     results["detect"] = detectImage
                 }
-                if let imgBase64 = ACCURAService.getImageToBase64(img: livenessImage) {
-                    results["detect_base64"] = imgBase64
-                }
             }
             if imagePath != "" {
                 results["image_uri"] = "file://\(imagePath!)"
-                results["image_uri_base64"] = ACCURAService.getUriToBase64(uri: "file://\(imagePath!)")
             }
             if videoPath != "" {
                 results["video_uri"] = videoPath!
@@ -337,6 +322,8 @@ class LVController: UIViewController, LivenessData
         if livenessConfigs.index(forKey: "isShowLogo") != nil {
             liveness.isShowLogo(livenessConfigs["isShowLogo"] as! Bool)
         }
+        liveness.setLogoImage("ic_logo.png")
+        
         liveness.setFeedBackProcessingMessage(LivenessConfigs.feedBackProcessingMessage)
         if livenessConfigs.index(forKey: "feedBackProcessingMessage") != nil {
             liveness.setFeedBackProcessingMessage(livenessConfigs["feedBackProcessingMessage"] as! String)

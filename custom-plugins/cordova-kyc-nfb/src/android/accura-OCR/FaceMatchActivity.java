@@ -286,8 +286,8 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
             isShowLogo = bundle.getBoolean("isShowLogo");
             livenessCustomization.showlogo = isShowLogo ? 1 : 0;
         }
-//        int ic_logo = getResources().getIdentifier("ic_logo" , "drawable" , getPackageName());
-//        livenessCustomization.logoPath = ic_logo;
+        int ic_logo = getResources().getIdentifier("ic_logo" , "drawable" , getPackageName());
+        livenessCustomization.logoPath = ic_logo;
 
 
         //Not activated yet!
@@ -490,8 +490,8 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
             isShowLogo = bundle.getBoolean("isShowLogo");
             cameraScreenCustomization.showlogo = isShowLogo ? 1 : 0;
         }
-//        int ic_logo = getResources().getIdentifier("ic_logo" , "drawable" , getPackageName());
-//        livenessCustomization.logoPath = ic_logo;
+        int ic_logo = getResources().getIdentifier("ic_logo" , "drawable" , getPackageName());
+        cameraScreenCustomization.logoPath = ic_logo;
 
 //        cameraScreenCustomization.setGlarePercentage(bundle.getInt("setGlarePercentage_0", getResources().getInteger(R("setGlarePercentage_0", "integer"))), bundle.getInt("setGlarePercentage_1", getResources().getInteger(R("setGlarePercentage_1", "integer"))));
         int minGlare = res.getInteger(R("setGlarePercentage_0", "integer"));
@@ -580,17 +580,9 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
                         caResults.put("score", result.getLivenessResult().getLivenessScore() * 100);
                         if (result.getFaceBiometrics() != null) {
                             caResults.put("detect", ACCURAService.getImageUri(result.getFaceBiometrics(), "live_detect", getFilesDir().getAbsolutePath()));
-                            caResults.put("detect_base64", ACCURAService.getUriToBase64(result.getFaceBiometrics()));
                         }
                         if (result.getImagePath() != null) {
                             caResults.put("image_uri", result.getImagePath());
-                            try {
-                                caResults.put("image_uri_base64", ACCURAService.getUriToBase64(ACCURAService.getBitmap( this.getContentResolver(), result.getImagePath() )));
-                            } catch (FileNotFoundException e) {
-
-                            } catch (IOException e) {
-
-                            }
                         }
                         if (result.getVideoPath() != null) {
                             caResults.put("video_uri", result.getVideoPath());
@@ -617,10 +609,8 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
                         String fileDir = getFilesDir().getAbsolutePath();
                         if (detectFace1 == null) {
                             results.put("img_1", ACCURAService.getImageUri(ACCURAService.face1, "img_1", fileDir));
-                            results.put("img_1_base64", ACCURAService.getUriToBase64(ACCURAService.face1));
                         } else {
                             results.put("img_1", ACCURAService.getImageUri(detectFace1, "img_1", fileDir));
-                            results.put("img_1_base64", ACCURAService.getUriToBase64(detectFace1));
                         }
 
                     } catch (JSONException e) {
@@ -676,13 +666,10 @@ public class FaceMatchActivity extends AppCompatActivity implements FaceHelper.F
                     results.put("with_face", witFace);
                     if (!witFace) {
                         results.put("img_1", ACCURAService.getImageUri(detectFace1, "img_1", fileDir));
-                        results.put("img_1_base64", ACCURAService.getUriToBase64(detectFace1));
-
+                    
                         results.put("img_2", ACCURAService.getImageUri(detectFace2, "img_2", fileDir));
-                        results.put("img_2_base64", ACCURAService.getUriToBase64(detectFace2));
                     } else {
                         results.put("detect", ACCURAService.getImageUri(detectFace2, "img_1", fileDir));
-                        results.put("detect_base64", ACCURAService.getUriToBase64(detectFace2));
                     }
                     Log.i(TAG, "onFaceMatch !isLiveness :- " + results);
                     ACCURAService.faceCL.success(results);

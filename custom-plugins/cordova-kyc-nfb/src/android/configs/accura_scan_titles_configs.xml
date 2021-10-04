@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
+    <bool name="IS_SHOW_LOGO">true</bool>
     <string name="SCAN_TITLE_OCR_FRONT">Scan Front Side of %s</string>
     <string name="SCAN_TITLE_OCR_BACK">Scan Back Side of %s</string>
     <string name="SCAN_TITLE_OCR">Scan %s</string>

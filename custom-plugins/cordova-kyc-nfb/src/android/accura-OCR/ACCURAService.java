@@ -60,15 +60,6 @@ public class ACCURAService extends CordovaPlugin {
         return salt.toString();
     }
 
-    public static String getUriToBase64(Bitmap bitmap) {
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
-        String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-        return encoded;
-    }
-
     public static Bitmap getBase64ToBitmap(String base64Image) {
 
         byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);

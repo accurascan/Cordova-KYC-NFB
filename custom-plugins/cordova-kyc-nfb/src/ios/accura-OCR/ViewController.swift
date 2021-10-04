@@ -6,6 +6,7 @@ import AccuraKYC
 class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     @IBOutlet weak var _viewLayer: UIView!
+    @IBOutlet weak var _viewImageLayer: UIView!
     @IBOutlet weak var _imageView: UIImageView!
     @IBOutlet weak var _imgFlipView: UIImageView!
     @IBOutlet weak var _lblTitle: UILabel!
@@ -102,6 +103,10 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if ScanConfigs.accuraMessagesConfigs.index(forKey: "IS_SHOW_LOGO") != nil {
+            let isShow = ScanConfigs.accuraMessagesConfigs["IS_SHOW_LOGO"] as? Bool ?? true
+            _viewImageLayer.isHidden = !isShow
+        }
         // Do any additional setup after loading the view.
         var width: CGFloat = 0.0
         var height: CGFloat = 0.0
@@ -1753,6 +1758,7 @@ extension ViewController: VideoCameraWrapperDelegate {
                 msg = ScanConfigs.SCAN_TITLE_OCR_FRONT
                 if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_FRONT") != nil {
                     msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_FRONT"] as! String
+                    msg = msg + " %@"
                 }
 //                if isNeedBackSideFirst() {
 //                    msg = ScanConfigs.SCAN_TITLE_OCR_BACK
@@ -1766,6 +1772,7 @@ extension ViewController: VideoCameraWrapperDelegate {
                 msg = ScanConfigs.SCAN_TITLE_OCR_BACK
                 if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
                     msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String
+                    msg = msg + " %@"
                 }
 //                if isNeedBackSideFirst() {
 //                    msg = ScanConfigs.SCAN_TITLE_OCR_FRONT
@@ -1779,6 +1786,7 @@ extension ViewController: VideoCameraWrapperDelegate {
                 msg = ScanConfigs.SCAN_TITLE_OCR
                 if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR") != nil {
                     msg = ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR"] as! String
+                    msg = msg + " %@"
                 }
                 msg = msg.replacingOccurrences(of: "%@", with: docName)
                 break
@@ -1866,9 +1874,6 @@ extension ViewController: VideoCameraWrapperDelegate {
         
         if let frontUri = ACCURAService.getImageUri(img: imageNumberPlate, name: nil) {
             results["front_img"] = frontUri
-        }
-        if let frontUriBase64 = ACCURAService.getImageToBase64(img: imageNumberPlate) {
-            results["front_img_base64"] = frontUriBase64
         }
         frontData["PlateNumber"] = plateNumber
         results["front_data"] = frontData
@@ -2050,22 +2055,13 @@ extension ViewController: VideoCameraWrapperDelegate {
         if let faceUri = ACCURAService.getImageUri(img: resultmodel.faceImage, name: nil) {
             results["face"] = faceUri
         }
-        if let imgBase64 = ACCURAService.getImageToBase64(img: resultmodel.faceImage) {
-            results["face_base64"] = imgBase64
-        }
         
         if let frontUri = ACCURAService.getImageUri(img: resultmodel.frontSideImage, name: nil) {
             results["front_img"] = frontUri
         }
-        if let imgBase64 = ACCURAService.getImageToBase64(img: resultmodel.frontSideImage) {
-            results["front_img_base64"] = imgBase64
-        }
         
         if let backUri = ACCURAService.getImageUri(img: resultmodel.backSideImage, name: nil) {
             results["back_img"] = backUri
-        }
-        if let imgBase64 = ACCURAService.getImageToBase64(img: resultmodel.backSideImage) {
-            results["back_img_base64"] = imgBase64
         }
         self.dictFaceDataFront = resultmodel.ocrFaceFrontData
         for data in dictFaceDataFront {
@@ -2076,9 +2072,6 @@ extension ViewController: VideoCameraWrapperDelegate {
                         let decodedimage:UIImage = UIImage(data: dataDecoded)!
                         if let sigUri = ACCURAService.getImageUri(img: decodedimage, name: nil) {
                             frontData["signature"] = sigUri
-                        }
-                        if let imgBase64 = ACCURAService.getImageToBase64(img: decodedimage) {
-                            results["signature_base64"] = imgBase64
                         }
                     }
                 } else {
@@ -2097,9 +2090,6 @@ extension ViewController: VideoCameraWrapperDelegate {
                         let decodedimage:UIImage = UIImage(data: dataDecoded)!
                         if let sigUri = ACCURAService.getImageUri(img: decodedimage, name: nil) {
                             backData["signature"] = sigUri
-                        }
-                        if let imgBase64 = ACCURAService.getImageToBase64(img: decodedimage) {
-                            results["signature_base64"] = imgBase64
                         }
                     }
                 } else {
@@ -2204,10 +2194,10 @@ extension ViewController: VideoCameraWrapperDelegate {
                    self.flipAnimation()
                    return
                } else if(BackSideImage == nil) {
-                self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
-                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
-                    self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
-                }
+//                self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
+//                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
+//                    self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
+//                }
                      self.flipAnimation()
                    return
                }else {
@@ -2215,10 +2205,10 @@ extension ViewController: VideoCameraWrapperDelegate {
                }
             } else {
                 if(BackSideImage == nil) {
-                    self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
-                    if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
-                        self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
-                    }
+//                    self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
+//                    if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
+//                        self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
+//                    }
                      self.flipAnimation()
                    return
                } else if (FrontImage == nil) {
@@ -2239,17 +2229,11 @@ extension ViewController: VideoCameraWrapperDelegate {
                     if let frontUri = ACCURAService.getImageUri(img: FaceImage!, name: nil) {
                         results["face"] = frontUri
                     }
-                    if let imgBase64 = ACCURAService.getImageToBase64(img: FaceImage!) {
-                        results["face_base64"] = imgBase64
-                    }
                     
                 }
                 if FrontImage != nil{
                     if let frontUri = ACCURAService.getImageUri(img: FrontImage!, name: nil) {
                         results["front_img"] = frontUri
-                    }
-                    if let imgBase64 = ACCURAService.getImageToBase64(img: FrontImage!) {
-                        results["front_img_base64"] = imgBase64
                     }
                     
                 }
@@ -2257,17 +2241,11 @@ extension ViewController: VideoCameraWrapperDelegate {
                     if let frontUri = ACCURAService.getImageUri(img: BackSideImage!, name: nil) {
                         results["back_img"] = frontUri
                     }
-                    if let imgBase64 = ACCURAService.getImageToBase64(img: BackSideImage!) {
-                        results["back_img_base64"] = imgBase64
-                    }
                     
                 }
             } else {
                 if let frontUri = ACCURAService.getImageUri(img: FrontImage!, name: nil) {
                     results["front_img"] = frontUri
-                }
-                if let imgBase64 = ACCURAService.getImageToBase64(img: FrontImage!) {
-                    results["front_img_base64"] = imgBase64
                 }
                 
             }
@@ -2355,19 +2333,19 @@ extension ViewController: VideoCameraWrapperDelegate {
                     self.imageRotation(rotation: "FrontImage")
                     isBackSide = true
                     
-                    self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
-                    if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
-                        self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
-                    }
+//                    self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
+//                    if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
+//                        self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
+//                    }
                     self.flipAnimation()
                     return
                 }
             }
             else{
-                self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
-                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
-                    self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
-                }
+//                self._lblTitle.text = ScanConfigs.SCAN_TITLE_OCR_BACK.replacingOccurrences(of: "%@", with: "Card")
+//                if ScanConfigs.accuraMessagesConfigs.index(forKey: "SCAN_TITLE_OCR_BACK") != nil {
+//                    self._lblTitle.text = (ScanConfigs.accuraMessagesConfigs["SCAN_TITLE_OCR_BACK"] as! String).replacingOccurrences(of: "%@", with: "Card")
+//                }
                 return
             }
         }
@@ -2407,9 +2385,6 @@ extension ViewController: VideoCameraWrapperDelegate {
             if let frontUri = ACCURAService.getImageUri(img: recogFrontImg, name: nil) {
                 results["face"] = frontUri
             }
-            if let imgBase64 = ACCURAService.getImageToBase64(img: recogFrontImg) {
-                results["face_base64"] = imgBase64
-            }
             
         }
         
@@ -2417,17 +2392,11 @@ extension ViewController: VideoCameraWrapperDelegate {
             if let frontUri = ACCURAService.getImageUri(img: recogFrontImg, name: nil) {
                 results["front_img"] = frontUri
             }
-            if let imgBase64 = ACCURAService.getImageToBase64(img: recogFrontImg) {
-                results["front_img_base64"] = imgBase64
-            }
             
         }
         if let recogBackImg = back{
             if let frontUri = ACCURAService.getImageUri(img: recogBackImg, name: nil) {
                 results["back_img"] = frontUri
-            }
-            if let imgBase64 = ACCURAService.getImageToBase64(img: recogBackImg) {
-                results["back_img_base64"] = imgBase64
             }
             
         }
@@ -2452,9 +2421,6 @@ extension ViewController: VideoCameraWrapperDelegate {
         let backData:[String: Any] = [:]
         if let frontUri = ACCURAService.getImageUri(img: bankCardImage, name: nil) {
             results["front_img"] = frontUri
-        }
-        if let imgBase64 = ACCURAService.getImageToBase64(img: bankCardImage) {
-            results["front_img_base64"] = imgBase64
         }
         
         for data in cardDetail {

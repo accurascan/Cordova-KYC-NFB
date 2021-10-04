@@ -18,18 +18,11 @@ class FMController: UIViewController, FacematchData {
                 if let img1 = ACCURAService.getImageUri(img: gl.face1!, name: nil) {
                     results["img_1"] = img1
                 }
-                if let imgBase64 = ACCURAService.getImageToBase64(img: gl.face1!) {
-                    results["img_1_base64"] = imgBase64
-                }
                 
             } else {
                 if let img1 = ACCURAService.getImageUri(img: ACCURAService.resizeImage(image: gl.face1!, targetSize: gl.face1Detect!.bound), name: nil) {
                     results["img_1"] = img1
                 }
-                if let imgBase64 = ACCURAService.getImageToBase64(img: ACCURAService.resizeImage(image: gl.face1!, targetSize: gl.face1Detect!.bound)) {
-                    results["img_1_base64"] = imgBase64
-                }
-                
             }
             if results.index(forKey: "img_1") != nil {
                 let pluginResult = CDVPluginResult(
@@ -65,23 +58,13 @@ class FMController: UIViewController, FacematchData {
                 if let img1 = ACCURAService.getImageUri(img: gl.face1!, name: nil) {
                     results["img_1"] = img1
                 }
-                if let imgBase64 = ACCURAService.getImageToBase64(img: gl.face1!) {
-                    results["img_1_base64"] = imgBase64
-                }
-                
                 if let img2 = ACCURAService.getImageUri(img: gl.face2!, name: nil) {
                     results["img_2"] = img2
-                }
-                if let imgBase64 = ACCURAService.getImageToBase64(img: gl.face2!) {
-                    results["img_2_base64"] = imgBase64
                 }
                 
             } else {
                 if let img1 = ACCURAService.getImageUri(img: ACCURAService.resizeImage(image: gl.face2!, targetSize: gl.face2Detect!.bound), name: nil) {
                     results["detect"] = img1
-                }
-                if let imgBase64 = ACCURAService.getImageToBase64(img: ACCURAService.resizeImage(image: gl.face2!, targetSize: gl.face2Detect!.bound)) {
-                    results["detect_base64"] = imgBase64
                 }
             }
             let pluginResult = CDVPluginResult(
@@ -261,6 +244,8 @@ class FMController: UIViewController, FacematchData {
         if livenessConfigs.index(forKey: "isShowLogo") != nil {
             liveness.isShowLogoImage(livenessConfigs["isShowLogo"] as! Bool)
         }
+        liveness.setLogoImage("ic_logo.png")
+        
         liveness.setFeedBackProcessingMessage(LivenessConfigs.feedBackProcessingMessage)
         if livenessConfigs.index(forKey: "feedBackProcessingMessage") != nil {
             liveness.setFeedBackProcessingMessage(livenessConfigs["feedBackProcessingMessage"] as! String)
