@@ -94,11 +94,13 @@ struct gl {
        return image1
    }
     
+    //Code for celan face match.
     @objc(cleanFaceMatch:)
     func cleanFM(command: CDVInvokedUrlCommand) {
         ACCURAService.cleanFaceData()
     }
     
+    //Code for get license info from SDK.
     @objc(getMetadata:)
     func getMetadata(command: CDVInvokedUrlCommand) {
         var pluginResult = CDVPluginResult(
@@ -148,6 +150,7 @@ struct gl {
         
     }
     
+    //Code for MRZ document scanning with messages.
     @objc(startMRZ:)
     func startMRZ(command: CDVInvokedUrlCommand) {
         gl.ocrClId = command.callbackId
@@ -176,62 +179,7 @@ struct gl {
         checkForDownloadMedia(vc: viewController)
     }
     
-    @objc(startBankCard:)
-    func startBankCard(command: CDVInvokedUrlCommand) {
-        gl.ocrClId = command.callbackId
-        gl.type = "bankcard"
-        ScanConfigs.accuraConfigs = command.argument(at: 0) as! [String: Any]
-        ScanConfigs.accuraConfigs["app_orientation"] = command.argument(at: 1) as! String
-        let viewController = UIStoryboard(name: "MainStoryboard_iPhone", bundle: nil).instantiateViewController(withIdentifier: "ViewController") as! ViewController
-        viewController.commandDelegate = self.commandDelegate
-        viewController.isCheckScanOCR = true
-//        viewController.countryid = 31
-        viewController.cardType = 3
-        viewController.cordovaViewController = self.viewController
-        viewController.win = self.viewController.view.window
-        checkForDownloadMedia(vc: viewController)
-    }
-    
-    @objc(startBarcode:)
-    func startBarcode(command: CDVInvokedUrlCommand) {
-        gl.ocrClId = command.callbackId
-        gl.type = "barcode"
-        ScanConfigs.accuraConfigs = command.argument(at: 0) as! [String: Any]
-        ScanConfigs.barcodeType = command.argument(at: 1) as! String
-        ScanConfigs.accuraConfigs["app_orientation"] = command.argument(at: 2) as! String
-        let viewController = UIStoryboard(name: "MainStoryboard_iPhone", bundle: nil).instantiateViewController(withIdentifier: "ViewController") as! ViewController
-        viewController.commandDelegate = self.commandDelegate
-        viewController.isBarCode = true
-        viewController.cordovaViewController = self.viewController
-        viewController.win = self.viewController.view.window
-        checkForDownloadMedia(vc: viewController)
-    }
-    
-    @objc(startOcrWithCard:)
-    func startOcrWithCard(command: CDVInvokedUrlCommand) {
-        gl.type = "ocr"
-        gl.ocrClId = command.callbackId
-        ScanConfigs.accuraConfigs = command.argument(at: 0) as! [String: Any]
-        ScanConfigs.CountryId = command.argument(at: 1) as! Int
-        ScanConfigs.CardId = command.argument(at: 2) as! Int
-        ScanConfigs.CardName = command.argument(at: 3) as! String
-        ScanConfigs.CardType = command.argument(at: 4) as! Int
-        ScanConfigs.accuraConfigs["app_orientation"] = command.argument(at: 5) as! String
-        let viewController = UIStoryboard(name: "MainStoryboard_iPhone", bundle: nil).instantiateViewController(withIdentifier: "ViewController") as! ViewController
-        viewController.cardType = command.argument(at: 4) as! Int
-        viewController.commandDelegate = self.commandDelegate
-        viewController.isCheckScanOCR = true
-        viewController.countryid = command.argument(at: 1) as! Int
-        viewController.cardid = command.argument(at: 2) as! Int
-        viewController.docName = command.argument(at: 3) as! String
-        if viewController.cardType == 1 {
-            viewController.isBarCode = true
-        }
-        viewController.cordovaViewController = self.viewController
-        viewController.win = self.viewController.view.window
-        checkForDownloadMedia(vc: viewController)
-    }
-    
+    //Code for liveness check in iOS.
     @objc(startLiveness:)
     func startLiveness(command: CDVInvokedUrlCommand) {
         //set liveness url
@@ -253,8 +201,7 @@ struct gl {
         self.viewController.view.window?.rootViewController = nav
     }
     
-    
-    
+    //Code for faceMatch check in iOS.
     @objc(startFaceMatch:)
     func startFaceMatch(command: CDVInvokedUrlCommand) {
         gl.type = "fm"
@@ -355,6 +302,8 @@ struct gl {
         )
     }
 }
+
+//Code for navigation bar style.
 class NavigationController: UINavigationController {
 
     override var shouldAutorotate: Bool {

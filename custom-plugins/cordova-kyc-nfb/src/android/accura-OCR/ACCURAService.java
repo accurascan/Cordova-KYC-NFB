@@ -133,6 +133,7 @@ public class ACCURAService extends CordovaPlugin {
             return true;
         }
 
+        //Code for get license info from SDK.
         if (action.equals("getMetadata")) {
             ocrCL = callbackContext;
             RecogEngine recogEngine = new RecogEngine();
@@ -166,6 +167,8 @@ public class ACCURAService extends CordovaPlugin {
             callbackContext.success(results);
             return true;
         }
+
+        //Code for celan face match.
         if (action.equals("cleanFaceMatch")) {
             ACCURAService.face1 = null;
             ACCURAService.face2 = null;
@@ -188,6 +191,8 @@ public class ACCURAService extends CordovaPlugin {
                 }
             }
         }
+
+        //Code for MRZ document scanning with scanning messages.
         if (action.equals("startMRZ")) {
             JSONObject config = args.getJSONObject(1);
             String type = args.getString(2);
@@ -204,6 +209,8 @@ public class ACCURAService extends CordovaPlugin {
             cordova.getActivity().startActivity(myIntent);
             return true;
         }
+
+        //Code for faceMatch check in Android.
         if (action.equals("startFaceMatch")) {
             JSONObject config = args.getJSONObject(1);
             String appOrientation = args.getString(2);
@@ -217,6 +224,7 @@ public class ACCURAService extends CordovaPlugin {
             return true;
         }
 
+        //Code for liveness check in Android.
         if (action.equals("startLiveness")) {
             faceCL = callbackContext;
             Intent intent = new Intent(cordova.getActivity(), FaceMatchActivity.class);

@@ -2,6 +2,7 @@ import UIKit
 import AccuraKYC
 import AVFoundation
 
+//ViewController of liveness check with result call back.
 class LVController: UIViewController, LivenessData
 {
     func livenessData(_ stLivenessValue: String!, livenessImage: UIImage!, status: Bool, imagePath: String!) {

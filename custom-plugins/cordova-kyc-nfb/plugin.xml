@@ -7,7 +7,7 @@
     <description>A Cordova plugin for ACCURAService</description>
     <license>BSD-3</license>
 
-    <!-- <dependency id="cordova-plugin-file" url="https://github.com/apache/cordova-plugin-file.git"/> -->
+    <!-- Extra cordova dependencies for accura features. -->
     <dependency id="cordova-plugin-screen-orientation" url="https://github.com/apache/cordova-plugin-screen-orientation.git"/>
     <dependency id="cordova-plugin-streaming-media" url="https://github.com/nchutchind/cordova-plugin-streaming-media.git"/>
     <dependency id="cordova-plugin-device" url="https://github.com/apache/cordova-plugin-device.git"/>
@@ -19,6 +19,7 @@
         <clobbers target="cordova.plugins.ACCURAService" />
     </js-module>
     <platform name="android">
+        <!-- Extra permissions into Android accura features. -->
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
             <uses-permission android:name="android.permission.CAMERA" />
@@ -34,6 +35,7 @@
         <!-- File for With Simulator support android library -->
         <!-- <lib-file src="src/android/lib/with_simulator/accura_kyc.aar"/> -->
 
+        <!-- Extra dependencies only for Android. -->
         <framework src="com.scottyab:rootbeer-lib:0.1.0" />
         <framework src="com.google.code.gson:gson:2.8.6" />
         <framework src="com.github.bumptech.glide:glide:4.6.1" />
@@ -49,6 +51,8 @@
             </feature>
             <access origin="http://localhost/*" />
         </config-file>
+
+        <!-- Extra accura scan supporting files for Android. -->
         <source-file src="src/android/accura-OCR/ACCURAService.java" target-dir="src/accura/kyc/plugin/" />
         <source-file src="src/android/accura-OCR/FaceMatchActivity.java" target-dir="src/accura/kyc/plugin/" />
         <source-file src="src/android/accura-OCR/OcrActivity.java" target-dir="src/accura/kyc/plugin/" />
@@ -57,7 +61,6 @@
         <resource-file src="src/android/accura-OCR/layout/activity_face_match.xml" target="res/layout/activity_face_match.xml"/>
         <resource-file src="src/android/accura-OCR/layout/custom_frame_layout.xml" target="res/layout/custom_frame_layout.xml"/>
         <resource-file src="src/android/accura-OCR/layout/ocr_activity.xml" target="res/layout/ocr_activity.xml"/>
-
 
         <resource-file src="src/android/accura-OCR/values/accura_strings.xml" target="res/values/accura_strings.xml"/>
         <resource-file src="src/android/accura-OCR/values/accura_colors.xml" target="res/values/accura_colors.xml"/>
@@ -68,7 +71,6 @@
         <resource-file src="src/android/configs/face_match_config.xml" target="res/values/face_match_config.xml"/>
         <resource-file src="src/android/configs/liveness_config.xml" target="res/values/liveness_config.xml"/>
         <resource-file src="src/android/configs/recog_engine_config.xml" target="res/values/recog_engine_config.xml"/>
-
 
         <source-file src="src/android/accura-OCR/drawables/drawable/flip_camera_icon.png" target-dir="res/drawable/"/>
         <source-file src="src/android/accura-OCR/drawables/drawable/ic_logo.png" target-dir="res/drawable/"/>
@@ -81,7 +83,7 @@
         <source-file src="src/android/accura-OCR/drawables/layout-land/custom_frame_layout.xml" target-dir="res/layout-land/"/>
         <source-file src="src/android/accura-OCR/drawables/layout-land/ocr_activity.xml" target-dir="res/layout-land/"/>
 
-
+        <!-- Hooks execution for Android. -->
         <hook type="after_plugin_install" src="scripts/afterBuild.js" />
         <hook type="before_plugin_rm" src="scripts/afterRemove.js" />
     </platform>
@@ -91,6 +93,7 @@
                 <param name="ios-package" value="ACCURAService"/>
             </feature>
         </config-file>
+        <!-- Permissions strings for iOS Info.plist -->
         <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
             <string>App needs to access camera to scan your document and provide you with accurate result</string>
         </config-file>
@@ -113,6 +116,7 @@
             <true/>
         </config-file>
 
+        <!-- Add iOS framework using cocoapods -->
         <podspec>
             <config>
                 <source url="https://cdn.cocoapods.org/"/>
@@ -128,6 +132,7 @@
         <!-- File for With Simulator support iOS library --> <!-- For active it uncomment bellow line and comment line no 107 -->
         <!--  <framework src="src/ios/with_simulator/AccuraKYC.framework" custom="true" embed="true" /> -->
 
+        <!-- Extra accura scan supporting files for iOS. -->
         <source-file src="src/ios/accura-OCR/resources/back.imageset/back480.png" target-dir="../../Images.xcassets/back.imageset/"/>
         <source-file src="src/ios/accura-OCR/resources/back.imageset/back720.png" target-dir="../../Images.xcassets/back.imageset/"/>
         <source-file src="src/ios/accura-OCR/resources/back.imageset/back1080.png" target-dir="../../Images.xcassets/back.imageset/"/>

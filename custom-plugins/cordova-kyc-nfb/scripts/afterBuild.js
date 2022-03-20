@@ -1,6 +1,7 @@
 const fs = require('fs');
 const os = require('os');
 const srcPath = __dirname.replace('scripts', '');
+//Code for copy license files into Project root
 var srcParentPath = __dirname.replace('plugins\\cordova-kyc-nfb\\scripts', 'platforms\\android');
 var fcPath = srcPath + 'src\\android\\accuraface.license';
 var lvPath = srcPath + 'src\\android\\accuraactiveliveness.license';
@@ -24,12 +25,12 @@ fs.copyFileSync(fcPath, fcDestPath);
 fs.copyFileSync(lvPath, lvDestPath);
 fs.copyFileSync(ocrPath, ocrDestPath);
 
+//Code for copy aar file into Project libs directory.
 var gradle = fs.readFileSync(gridlePath).toString();
 if (gradle.indexOf('accura_kyc.aar') === -1) {
     const lib = 'implementation files(\'libs\\\\accura_kyc.aar\')\n';
     const indexForDep = gradle.indexOf('// SUB-PROJECT DEPENDENCIES START\n');
     const firstPart = gradle.substr(0, indexForDep);
     const lastPart = gradle.substr(indexForDep);
-    // console.log(firstPart + lib + lastPart);
     fs.writeFileSync(gridlePath, firstPart + lib + lastPart)
 }

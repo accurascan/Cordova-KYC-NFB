@@ -1,3 +1,4 @@
+//Liveness default config & messages.
 struct LivenessConfigs {
     static let feedbackTextSize: Float = 18.0
 

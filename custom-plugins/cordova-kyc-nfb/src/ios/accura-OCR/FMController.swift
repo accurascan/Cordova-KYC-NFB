@@ -1,6 +1,7 @@
 import UIKit
 import AccuraKYC
 
+//ViewController of face match check with result call back
 class FMController: UIViewController, FacematchData {
     var livenessConfigs:[String: Any] = [:]
     var commandDelegate:CDVCommandDelegate? = nil

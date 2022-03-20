@@ -1,4 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!-- Messages of scanning window title. -->
 <resources>
     <bool name="IS_SHOW_LOGO">true</bool>
     <string name="SCAN_TITLE_OCR_FRONT">Scan Front Side of %s</string>

@@ -1,3 +1,4 @@
+//Error message when scanning documents.
 struct AccuraErrorType {
     static let ACCURA_ERROR_CODE_MOTION = "Keep Document Steady"
 

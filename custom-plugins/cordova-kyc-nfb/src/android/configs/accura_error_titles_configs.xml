@@ -1,4 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!-- Error message when scanning documents. -->
 <resources>
     <string name="ACCURA_ERROR_CODE_MOTION">Keep Document Steady</string>
     <string name="ACCURA_ERROR_CODE_DOCUMENT_IN_FRAME">Keep document in frame</string>
